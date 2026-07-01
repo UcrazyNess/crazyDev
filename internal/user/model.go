@@ -10,10 +10,10 @@ import (
 
 // User مدل کاربر
 type User struct {
-	Name      string         `json:"name" gorm:"unique;not null"` // نام کاربری رو یونیک در نظر گرفتم
-	Password  string         `json:"-" gorm:"not null"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	Name     string `json:"name" gorm:"unique;not null"` // نام کاربری رو یونیک در نظر گرفتم
+	Password string `json:"-" gorm:"not null"`
 	dbsqli.BaseModel
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 // Session مدل سشن برای مدیریت نشست‌ها
