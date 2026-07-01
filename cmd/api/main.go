@@ -25,7 +25,7 @@ func main() {
 	}
 	serve := serve.NewServe(serve.WithPort(config.Envs().Port), serve.PublicAccess(config.Envs().PublicAccess))
 	router := routing.SetupRouter(routing.WithLoger(config.Envs().DebugMode))
-	router.Get("/", func(ctx *gin.Context) {
+	router.GET("/", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "welcome.html", gin.H{})
 	})
 	user.SetupRouter(router, db)
