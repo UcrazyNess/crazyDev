@@ -9,6 +9,7 @@ import (
 type option func(*gin.Engine)
 
 func SetupRouter(opts ...option) *Router {
+
 	app := gin.New()
 	app.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
 		recovery(c, err)
@@ -32,4 +33,9 @@ func WithLoger(allow bool) option {
 	return func(e *gin.Engine) {
 		e.Use(gin.Logger())
 	}
+}
+
+func (r *Router) WithMiddlewares(mdlwrs ...gin.HandlerFunc) *Router {
+	r.grp.Use(mdlwrs...)
+	return r
 }

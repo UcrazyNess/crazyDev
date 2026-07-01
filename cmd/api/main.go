@@ -29,6 +29,5 @@ func main() {
 		ctx.HTML(http.StatusOK, "welcome.html", gin.H{})
 	})
 	user.SetupRouter(router, db)
-
 	serve.Serve(router.Exec())
 }
