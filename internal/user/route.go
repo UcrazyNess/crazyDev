@@ -11,7 +11,7 @@ func SetupRouter(r *routing.Router, db *gorm.DB) {
 	usrGrp := r.Group("user")
 	{
 		usrGrp.POST("/singup", h.Rgister)
-		usrGrp.POST("/login", h.Rgister)
+		usrGrp.POST("/login", h.Login)
 		usrGrp.PUT("/", h.Update)
 		usrGrp.DELETE("/", h.Delete)
 		usrGrp.GET("/:id", h.Show)
