@@ -1,0 +1,9 @@
+[build]
+  # دستور ساخت پروژه
+  cmd = "go build -o ./tmp/api ./cmd/api/main.go"
+  # اجرای خروجی (این مسیر خیلی مهم است)
+  full_bin = "./tmp/api"
+  # مسیری که air در آن اجرا می‌شود (ریشه پروژه)
+  root = "."
+  # فایل‌هایی که باید تماشا شوند
+  include_dir = ["cmd/api", "pkg", "internal"]

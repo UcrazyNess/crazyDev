@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crazyDev | پایان کابوس کانفیگ‌های دستی</title>
+    
+    <!-- فونت شبنم برای حس ایرانی‌تر -->
+    <link href="/static/assets/font-face.css" rel="stylesheet" type="text/css" />
+    <!-- فونت لاله زار برای تیترها -->
+    <link href="/static/assets/css2.css?family=Lalezar&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="/static/js/3.4.17.js"></script>
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="/static/assets/all.min.css">
+    <link rel="stylesheet" href="/static/assets/devicon.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Shabnam', 'sans-serif'], // فونت اصلی متن
+                        title: ['Lalezar', 'cursive'],   // فونت تیترها
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        // پالت رنگی با الهام از کاشی‌کاری‌های ایرانی
+                        'persian-blue': '#1C39BB',    // آبی لاجوردی
+                        'persian-cyan': '#00E5FF',    // فیروزه‌ای روشن (حفظ حس سایبرپانک)
+                        'persian-cyan-dark': '#0097A7', // فیروزه‌ای تیره
+                        'persian-gold': '#D4AF37',    // طلایی ایرانی
+                        'dark-bg': '#0B0F19',         // پس زمینه تاریک
+                        'dark-surface': '#151C2C',
+                    },
+                    animation: {
+                        'float-slow': 'float 6s ease-in-out infinite',
+                        'float-fast': 'float 4s ease-in-out infinite',
+                        'float-delay': 'float 5s ease-in-out infinite 2s',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'spin-slow': 'spin 30s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.8, transform: 'scale(1)', boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)' },
+                            '50%': { opacity: 1, transform: 'scale(1.05)', boxShadow: '0 0 40px rgba(0, 229, 255, 0.8)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* افکت‌های نئونی و گرادیانت متنی */
+        .text-gradient {
+            background: linear-gradient(to left, #00E5FF, #D4AF37); /* ترکیب فیروزه‌ای و طلایی */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glow-box {
+            box-shadow: 0 0 30px rgba(28, 57, 187, 0.3); /* هاله آبی لاجوردی */
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* پترن اسلیمی ظریف برای بک‌گراند */
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300e5ff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .persian-border {
+             border-image: linear-gradient(to right, #00E5FF, #1C39BB) 1;
+             border-bottom: 2px solid;
+        }
+
+    </style>
+</head>
+<body class="bg-dark-bg font-sans bg-pattern relative min-h-screen flex flex-col">
+
+    <!-- هاله‌های نئونی پس‌زمینه با رنگ‌های ایرانی -->
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-persian-cyan opacity-10 rounded-full blur-[120px] -z-10"></div>
+    <div class="absolute bottom-10 left-1/4 w-80 h-80 bg-persian-blue opacity-20 rounded-full blur-[120px] -z-10"></div>
+
+    <!-- هدر / نویگیشن -->
+    <header class="w-full py-6 px-4 sm:px-8 lg:px-16 flex justify-between items-center z-10 sticky top-0 backdrop-blur-lg border-b border-white/5 bg-dark-bg/80">
+        <div class="flex items-center gap-3">
+            <span class="text-4xl font-title tracking-wider text-white"> <!-- استفاده از فونت لاله زار -->
+                crazy<span class="text-persian-cyan">Dev</span>
+            </span>
+            <span class="bg-persian-gold/20 text-persian-gold text-xs py-1 px-2 rounded-md border border-persian-gold/30 mt-2">نسخه ۱.۰</span>
+        </div>
+        
+        <nav class="hidden md:flex gap-8 text-sm text-gray-300 font-medium">
+            <a href="#" class="hover:text-persian-cyan transition-colors persian-border pb-1">مستندات</a>
+            <a href="#" class="hover:text-persian-cyan transition-colors">سناریوها</a>
+            <a href="#" class="hover:text-persian-cyan transition-colors">درباره ما</a>
+        </nav>
+
+        <a href="https://github.com/UcrazyNess/crazyDev" target="_blank" class="flex items-center gap-2 bg-dark-surface border border-persian-blue/30 hover:border-persian-cyan/50 py-2 px-5 rounded-lg transition-all duration-300 text-sm shadow-[0_0_10px_rgba(28,57,187,0.2)]">
+            <i class="fab fa-github text-lg text-persian-cyan"></i>
+            <span class="hidden sm:inline text-gray-200">گیت‌هاب</span>
+        </a>
+    </header>
+
+    <!-- بخش اصلی (Hero Section) -->
+    <main class="flex-grow flex flex-col lg:flex-row items-center justify-between px-4 sm:px-8 lg:px-16 py-12 lg:py-24 z-10 w-full max-w-7xl mx-auto gap-12">
+        
+        <!-- ستون سمت راست: متن و توضیحات -->
+        <div class="w-full lg:w-1/2 flex flex-col gap-6 text-center lg:text-right relative">
+            <div class="inline-block bg-persian-blue/20 border border-persian-blue/40 rounded-full px-5 py-2 text-persian-cyan text-xs font-bold w-max mx-auto lg:mx-0 mb-2 shadow-sm shadow-persian-blue/20">
+                <i class="fas fa-hammer ml-2 text-persian-gold"></i> استودیوی معماری و ارکستریشن زیرساخت
+            </div>
+            
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-title leading-tight text-white drop-shadow-lg">
+                پایانِ کابوسِ <br>
+                <span class="text-gradient">کانفیگ‌های دستی</span>
+            </h1>
+            
+            <p class="text-lg text-gray-300 leading-loose max-w-xl mx-auto lg:mx-0 mt-4 text-justify rtl">
+                باگ‌های اعصاب‌خردکن YAML-Hell را دور بزنید. یک استکان چای لب‌سوز بریزید و بگذارید دایرکتوری‌ها، کانتینرها و شبکه‌های ایزوله شما به صورت خودکار با قدرت Go متولد شوند.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4 mt-8 justify-center lg:justify-start">
+                <button class="bg-persian-cyan hover:bg-persian-cyan-dark text-dark-bg font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-[0_5px_20px_rgba(0,229,255,0.4)] flex items-center gap-2 text-lg">
+                    <i class="fas fa-play ml-1"></i> شروع سریع
+                </button>
+                <button class="bg-transparent hover:bg-persian-blue/10 border-2 border-persian-blue/50 text-white font-medium py-3 px-8 rounded-lg transition-all duration-300 flex items-center gap-2 text-lg">
+                    <i class="fas fa-terminal ml-1"></i> دریافت CLI
+                </button>
+            </div>
+
+            <!-- ترمینال نصب -->
+            <div class="mt-12 bg-[#0d121e] border border-persian-blue/30 rounded-xl overflow-hidden glow-box text-left dir-ltr relative max-w-lg mx-auto lg:mx-0 shadow-2xl" dir="ltr">
+                <div class="bg-[#131b2f] px-4 py-2 flex items-center gap-2 border-b border-persian-blue/20">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="text-xs text-gray-400 ml-2 font-mono">crazyDev-installer ~ bash</span>
+                </div>
+                <div class="p-5 font-mono text-sm text-gray-300 flex justify-between items-start group">
+                    <div class="leading-relaxed">
+                        <span class="text-persian-cyan font-bold">❯</span> git clone https://github.com/UcrazyNess/crazyDev.git<br>
+                        <span class="text-persian-cyan font-bold">❯</span> cd crazyDev<br>
+                        <span class="text-persian-cyan font-bold">❯</span> go run main.go
+                    </div>
+                    <button onclick="copyCode()" class="text-gray-500 hover:text-persian-cyan transition-colors opacity-0 group-hover:opacity-100 bg-dark-bg/50 p-2 rounded" title="Copy to clipboard">
+                        <i class="far fa-copy text-lg"></i>
+                    </button>
+                </div>
+                <!-- پیام کپی موفق -->
+                <div id="copyToast" class="absolute top-2 right-2 bg-persian-cyan/20 text-persian-cyan text-xs px-3 py-1.5 rounded opacity-0 transition-opacity duration-300 pointer-events-none border border-persian-cyan/30 backdrop-blur-sm">
+                    دستور کپی شد!
+                </div>
+            </div>
+        </div>
+
+        <!-- ستون سمت چپ: گرافیک، گوفر ایرانی و داکر (آرت‌ورک) -->
+        <div class="w-full lg:w-1/2 relative h-[500px] flex items-center justify-center mt-12 lg:mt-0">
+            
+            <!-- دایره پس‌زمینه افکت دار (تداعی شمسه ایرانی) -->
+            <div class="absolute w-[350px] h-[350px] border-2 border-persian-gold/20 rounded-full animate-pulse-glow"></div>
+            <div class="absolute w-[450px] h-[450px] border border-persian-cyan/10 rounded-full border-dashed animate-spin-slow"></div>
+            <!-- هشت ضلعی برای حس معماری ایرانی -->
+
+
+            <!-- تصویر گوفر ایرانی -->
+            <div id="gopher-img" class="relative z-20 w-80 h-80 rounded-2xl animate-float-slow drop-shadow-[0_0_30px_rgba(0,229,255,0.3)]">
+                <!-- استفاده از عکس تولید شده -->
+                <img src="/static/assets/gopher.png" alt="Iranian Go Gopher Programmer" class="w-full h-full object-contain rounded-2xl">
+            </div>
+
+            <!-- جایگاه عکس داکر -->
+            <div id="docker-img" class="absolute z-30 w-24 h-24 bottom-5 right-5 md:right-16 bg-[#1a233a] border border-blue-500/40 rounded-xl animate-float-delay shadow-lg shadow-blue-500/20 flex flex-col items-center justify-center">
+                <i class="fa-brands fa-docker text-4xl mb-1 text-[#2496ed]"></i>
+            </div>
+
+            <!-- آیکون‌های فریم‌ورک‌های پراکنده -->
+            <!-- React -->
+            <div class="absolute z-10 w-14 h-14 top-10 left-10 md:left-20 bg-dark-surface/80 backdrop-blur-sm border border-white/10 rounded-full animate-float-fast flex items-center justify-center shadow-lg">
+                 <i class="devicon-git-plain text-xl text-orange-600"></i>
+            </div>
+            
+            <!-- Python / Django -->
+            <div class="absolute z-10 w-12 h-12 bottom-20 left-0 md:left-12 bg-dark-surface/80 backdrop-blur-sm border border-white/10 rounded-full animate-float-slow flex items-center justify-center shadow-lg" style="animation-delay: 1s;">
+                <i class="devicon-django-plain text-xl text-green-700"></i>
+            </div>
+
+            <!-- Node.js -->
+            <div class="absolute z-10 w-16 h-16 top-24 -right-4 md:right-4 bg-dark-surface/80 backdrop-blur-sm border border-white/10 rounded-full animate-float-delay flex items-center justify-center shadow-lg">
+                <i class="devicon-nextjs-plain text-xl text-black"></i>
+            </div>
+            
+            <!-- laravel -->
+            <div class="absolute z-10 w-14 h-14 top-1/2 -left-8 md:-left-4 bg-dark-surface/80 backdrop-blur-sm border border-white/10 rounded-xl animate-float-fast flex items-center justify-center shadow-lg" style="animation-delay: 0.5s;">
+                <i class="devicon-laravel-plain text-xl text-red-500"></i>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- بخش ویژگی‌ها -->
+    <section class="w-full bg-[#0d121e] border-y border-persian-blue/20 mt-12 relative overflow-hidden">
+        <!-- تزئینات پس‌زمینه بخش ویژگی‌ها -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-persian-gold/30 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 py-20 z-10 relative">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-title text-white mb-4">ویژگی‌های برجسته</h2>
+                <p class="text-gray-400 font-medium">تمام دغدغه‌های زیرساختی شما در یک هسته مینیمال و قدرتمند</p>
+                <div class="w-24 h-1 bg-persian-cyan mx-auto mt-6 rounded-full opacity-50"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- کارت 1 -->
+                <div class="bg-[#151c2c] border border-persian-blue/20 hover:border-persian-cyan/50 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-2 group shadow-lg hover:shadow-[0_10px_30px_rgba(0,229,255,0.1)] relative">
+                    <div class="absolute top-0 right-0 w-12 h-12 bg-persian-cyan/5 rounded-bl-3xl rounded-tr-2xl"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-persian-blue/20 to-persian-cyan/10 border border-persian-cyan/20 rounded-2xl flex items-center justify-center text-persian-cyan text-3xl mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-2xl font-title text-white mb-4">داربست‌بندی پویا</h3>
+                    <p class="text-gray-400 leading-loose text-justify text-sm">
+                        تعریف سناریوهای مرحله به مرحله برای ساخت پوشه‌ها، تزریق کدهای پایه (Template) و نصب وابستگی‌ها به صورت کاملا خودکار و بدون دخالت دست.
+                    </p>
+                </div>
+
+                <!-- کارت 2 -->
+                <div class="bg-[#151c2c] border border-persian-blue/20 hover:border-persian-gold/50 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-2 group shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-transparent via-persian-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-persian-gold/20 to-yellow-500/10 border border-persian-gold/20 rounded-2xl flex items-center justify-center text-persian-gold text-3xl mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-all">
+                        <i class="fas fa-skull"></i>
+                    </div>
+                    <h3 class="text-2xl font-title text-white mb-4">قاتلِ YAML</h3>
+                    <p class="text-gray-400 leading-loose text-justify text-sm">
+                        طراحی بصری و تولید آنی فایل‌های پیچیده <code class="text-persian-gold bg-black/30 px-1 rounded">docker-compose</code> با پشتیبانی کامل از شبکه‌های اختصاصی و IPهای ثابت.
+                    </p>
+                </div>
+
+                <!-- کارت 3 -->
+                <div class="bg-[#151c2c] border border-persian-blue/20 hover:border-persian-cyan/50 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-2 group shadow-lg hover:shadow-[0_10px_30px_rgba(0,229,255,0.1)] relative">
+                     <div class="absolute bottom-0 left-0 w-12 h-12 bg-persian-cyan/5 rounded-tr-3xl rounded-bl-2xl"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-persian-blue/20 to-persian-cyan/10 border border-persian-cyan/20 rounded-2xl flex items-center justify-center text-persian-cyan text-3xl mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-2xl font-title text-white mb-4">اجرای زنده (Remote)</h3>
+                    <p class="text-gray-400 leading-loose text-justify text-sm">
+                        اتصال مستقیم و امن پنل وب به ترمینال سرور فیزیکی و پیاده‌سازی معماری تنها با یک کلیک به همراه استریم زنده و بلادرنگ لاگ‌ها.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- فوتر -->
+    <footer class="w-full border-t border-white/5 mt-auto bg-[#080b12] z-10 text-center py-8">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-500 text-sm font-medium">
+                توسعه داده شده با <span class="text-red-500 animate-pulse inline-block">❤️</span> و <span class="text-[#00ADD8] font-bold text-lg">Go</span> | تحت لایسنس MIT
+            </p>
+            <div class="flex gap-4 text-gray-500">
+                <a href="#" class="hover:text-persian-cyan transition-colors"><i class="fab fa-twitter text-xl"></i></a>
+                <a href="#" class="hover:text-persian-cyan transition-colors"><i class="fab fa-telegram text-xl"></i></a>
+                <a href="https://github.com/UcrazyNess/crazyDev" class="hover:text-persian-cyan transition-colors"><i class="fab fa-github text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- اسکریپت‌ها -->
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
