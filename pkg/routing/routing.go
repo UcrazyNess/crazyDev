@@ -1,6 +1,8 @@
 package routing
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +18,9 @@ func SetupRouter(opts ...option) *Router {
 	}
 	app.LoadHTMLGlob("./public/views/*")
 	app.Static("/static", "./public")
-
+	app.NoRoute(func(ctx *gin.Context) {
+		ctx.HTML(http.StatusNotFound, "404.html", gin.H{})
+	})
 	group := app.Group("/")
 	return &Router{
 		grp: group,
