@@ -10,6 +10,7 @@ import (
 	"crazyDev/migration"
 	"crazyDev/pkg/config"
 	"crazyDev/pkg/dbsqli"
+	"crazyDev/pkg/middleware/authorizeSession"
 	"crazyDev/pkg/routing"
 	"crazyDev/pkg/serve"
 )
@@ -29,6 +30,15 @@ func main() {
 	router := routing.SetupRouter(routing.WithLoger(config.Envs().DebugMode))
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "welcome.html", gin.H{})
+	})
+	router.GET("/login", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "login.html", gin.H{})
+	})
+	router.GET("/signup", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "signup.html", gin.H{})
+	})
+	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/dashboard", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	})
 	user.SetupRouter(router, db)
 	serve.Serve(router.Exec())

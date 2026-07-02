@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crazyDev | ثبت نام در سیستم</title>
+    
+    <!-- استفاده از CDN برای فونت‌ها جهت نمایش صحیح در پیش‌نمایش -->
+    <link href="/static/assets/font-face.css" rel="stylesheet" type="text/css" />
+
+    <!-- فونت لاله زار برای تیترها -->
+    <link href="/static/assets/css2.css?family=Lalezar&display=swap" rel="stylesheet">
+
+    
+    <!-- Tailwind CSS -->
+    <script src="/static/js/3.4.17.js"></script>
+
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="/static/assets/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Shabnam', 'sans-serif'],
+                        title: ['Lalezar', 'cursive'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        'persian-blue': '#1C39BB',
+                        'persian-cyan': '#00E5FF',
+                        'persian-cyan-dark': '#0097A7',
+                        'persian-gold': '#D4AF37',
+                        'dark-bg': '#0B0F19',
+                        'dark-surface': '#151C2C',
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.8, transform: 'scale(1)', boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)' },
+                            '50%': { opacity: 1, transform: 'scale(1.05)', boxShadow: '0 0 40px rgba(0, 229, 255, 0.8)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(to left, #00E5FF, #D4AF37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glow-box {
+            box-shadow: 0 0 30px rgba(28, 57, 187, 0.2);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+        }
+
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300e5ff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .persian-border {
+             border-image: linear-gradient(to right, #00E5FF, #1C39BB) 1;
+             border-bottom: 2px solid;
+        }
+
+        /* استایل اختصاصی اینپوت‌ها */
+        .input-cyber {
+            background-color: rgba(21, 28, 44, 0.7);
+            border: 1px solid rgba(28, 57, 187, 0.4);
+            transition: all 0.3s ease;
+        }
+        .input-cyber:focus {
+            border-color: #00E5FF;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg font-sans bg-pattern relative min-h-screen flex flex-col justify-between">
+
+    <!-- هاله‌های نئونی پس‌زمینه -->
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-persian-cyan opacity-10 rounded-full blur-[120px] -z-10"></div>
+    <div class="absolute bottom-10 left-1/4 w-80 h-80 bg-persian-blue opacity-20 rounded-full blur-[120px] -z-10"></div>
+
+    <!-- هدر / نویگیشن -->
+    <header class="w-full py-6 px-4 sm:px-8 lg:px-16 flex justify-between items-center z-10 backdrop-blur-lg border-b border-white/5 bg-dark-bg/80">
+        <a href="/" class="flex items-center gap-3">
+            <span class="text-4xl font-title tracking-wider text-white">
+                crazy<span class="text-persian-cyan">Dev</span>
+            </span>
+        </a>
+        
+        <a href="/" class="flex items-center gap-2 bg-transparent hover:bg-persian-blue/10 border border-persian-blue/30 text-gray-300 py-2 px-4 rounded-lg transition-all duration-300 text-sm">
+            <i class="fas fa-home ml-1"></i>
+            بازگشت به خانه
+        </a>
+    </header>
+
+    <!-- بخش اصلی (فرم ثبت نام) -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12 z-10 w-full relative">
+        
+        <div class="bg-[#0d121e] glow-box rounded-2xl w-full max-w-md overflow-hidden relative backdrop-blur-md">
+            
+            <!-- نوار تزئینی بالای فرم -->
+            <div class="h-1 w-full bg-gradient-to-r from-persian-blue via-persian-cyan to-persian-gold"></div>
+            
+            <div class="p-8 sm:p-10">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-persian-blue/20 to-persian-cyan/10 border border-persian-cyan/20 rounded-2xl flex items-center justify-center text-persian-cyan text-3xl mx-auto mb-4 animate-pulse-glow">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h1 class="text-3xl font-title text-white">ثبت‌نام در پلتفرم</h1>
+                    <p class="text-gray-400 text-sm mt-2 font-mono">Join the YAML-Hell Killers</p>
+                </div>
+
+                <form id="signupForm" class="space-y-6">
+                    <!-- فیلد نام / نام کاربری -->
+                    <div class="relative">
+                        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">نام کاربری</label>
+                        <div class="relative flex items-center">
+                            <div class="absolute right-0 inset-y-0 flex items-center pr-4 pointer-events-none text-persian-cyan">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                required 
+                                dir="ltr"
+                                placeholder="مثال: 1mohammad"
+                                class="input-cyber w-full py-3 pr-11 pl-4 rounded-xl text-left text-white placeholder-gray-600 focus:bg-dark-surface"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- فیلد رمز عبور -->
+                    <div class="relative">
+                        <label for="password" class="block text-sm font-medium text-gray-300 mb-2">رمز عبور</label>
+                        <div class="relative flex items-center">
+                            <div class="absolute right-o inset-y-0 flex items-center pr-4 pointer-events-none text-persian-cyan">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                required 
+                                dir="ltr"
+                                placeholder="••••••••"
+                                class="input-cyber w-full py-3 pr-11 pl-4 rounded-xl text-left text-white placeholder-gray-600 focus:bg-dark-surface"
+                            >
+                            <button type="button" id="togglePassword" class="absolute left-0 inset-y-0 flex items-center pl-4 text-gray-400 hover:text-white transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- پیام‌های سیستم (خطا یا موفقیت) -->
+                    <div id="formMessage" class="hidden text-sm p-3 rounded-lg border text-center transition-all"></div>
+
+                    <!-- دکمه ارسال -->
+                    <button 
+                        type="submit" 
+                        id="submitBtn"
+                        class="w-full bg-persian-cyan hover:bg-persian-cyan-dark text-dark-bg font-bold py-3.5 px-8 rounded-xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_5px_20px_rgba(0,229,255,0.3)] flex justify-center items-center gap-2 mt-4"
+                    >
+                        <span>تکمیل ثبت‌نام</span>
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </form>
+
+                <div class="mt-8 text-center text-sm text-gray-400">
+                    قبلاً ثبت‌نام کرده‌اید؟ 
+                    <a href="login" class="text-persian-cyan hover:text-persian-gold transition-colors persian-border pb-0.5 inline-block">ورود به سیستم</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="w-full border-t border-white/5 bg-[#080b12] z-10 py-4 text-center">
+        <p class="text-gray-600 text-xs font-mono">crazyDev Authentication Gateway v1.0</p>
+    </footer>
+
+    <!-- اسکریپت‌های مربوط به فرم و API -->
+    <script>
+        // نمایش و مخفی کردن رمز عبور
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        // هندل کردن فرم ثبت نام
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // جلوگیری از رفرش صفحه
+
+            const name = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const formMessage = document.getElementById('formMessage');
+
+            // تغییر حالت دکمه به لودینگ
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-lg"></i> <span>در حال ارتباط با هسته...</span>';
+            submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            
+            // مخفی کردن پیام قبلی
+            formMessage.classList.add('hidden');
+            formMessage.className = 'hidden text-sm p-3 rounded-lg border text-center transition-all mt-4';
+
+            try {
+                // ارسال درخواست به API
+                const response = await fetch('/user/singup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        password: password
+                    })
+                });
+
+                // بررسی پاسخ سرور
+                if (response.ok) {
+                    // موفقیت‌آمیز
+                    // const data = await response.json(); // در صورت نیاز به خواندن دیتای برگشتی
+                    
+                    formMessage.classList.remove('hidden');
+                    formMessage.classList.add('bg-green-500/10', 'border-green-500/30', 'text-green-400');
+                    formMessage.innerHTML = '<i class="fas fa-check-circle ml-1"></i> حساب کاربری شما با موفقیت در دیتابیس ثبت شد.';
+                    
+                    // پاک کردن فرم
+                    document.getElementById('signupForm').reset();
+                    
+                    // ریدایرکت بعد از موفقیت (اختیاری)
+                    // setTimeout(() => window.location.href = '/login', 2000);
+                } else {
+                    // خطای سمت سرور (مثلا کاربر تکراری است)
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'خطا در ثبت اطلاعات، لطفا دوباره تلاش کنید.');
+                }
+            } catch (error) {
+                // خطای شبکه یا خطای پرتاب شده از بالا
+                console.error('Error in signup:', error);
+                
+                formMessage.classList.remove('hidden');
+                formMessage.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-400');
+                
+                // پیام دمو برای زمانی که API واقعی روی این آدرس در دسترس نیست
+                if(error.message === 'Failed to fetch') {
+                     formMessage.innerHTML = '<i class="fas fa-exclamation-circle ml-1"></i> درخواست ارسال شد (خطای اتصال به سرور محلی API). ساختار JSON آماده است.';
+                } else {
+                     formMessage.innerHTML = `<i class="fas fa-exclamation-triangle ml-1"></i> ${error.message}`;
+                }
+            } finally {
+                // برگرداندن دکمه به حالت اولیه
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>تکمیل ثبت‌نام</span><i class="fas fa-arrow-left"></i>';
+                submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crazyDev | ورود به سیستم</title>
+    
+    <!-- فونت شبنم برای حس ایرانی‌تر -->
+    <link href="/static/assets/font-face.css" rel="stylesheet" type="text/css" />
+
+    <!-- فونت لاله زار برای تیترها -->
+    <link href="/static/assets/css2.css?family=Lalezar&display=swap" rel="stylesheet">
+
+    
+    <!-- Tailwind CSS -->
+    <script src="/static/js/3.4.17.js"></script>
+
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="/static/assets/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Shabnam', 'sans-serif'],
+                        title: ['Lalezar', 'cursive'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        'persian-blue': '#1C39BB',
+                        'persian-cyan': '#00E5FF',
+                        'persian-cyan-dark': '#0097A7',
+                        'persian-gold': '#D4AF37',
+                        'dark-bg': '#0B0F19',
+                        'dark-surface': '#151C2C',
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.8, transform: 'scale(1)', boxShadow: '0 0 20px rgba(28, 57, 187, 0.4)' },
+                            '50%': { opacity: 1, transform: 'scale(1.05)', boxShadow: '0 0 40px rgba(28, 57, 187, 0.8)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(to left, #1C39BB, #00E5FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glow-box {
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(28, 57, 187, 0.3);
+        }
+
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231c39bb' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .persian-border {
+             border-image: linear-gradient(to right, #1C39BB, #00E5FF) 1;
+             border-bottom: 2px solid;
+        }
+
+        .input-cyber {
+            background-color: rgba(21, 28, 44, 0.7);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .input-cyber:focus {
+            border-color: #1C39BB;
+            box-shadow: 0 0 10px rgba(28, 57, 187, 0.3);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg font-sans bg-pattern relative min-h-screen flex flex-col justify-between">
+
+    <!-- هاله‌های نئونی پس‌زمینه (متفاوت با صفحه ثبت نام) -->
+    <div class="absolute top-10 left-1/4 w-96 h-96 bg-persian-blue opacity-10 rounded-full blur-[120px] -z-10"></div>
+    <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-persian-cyan opacity-15 rounded-full blur-[100px] -z-10"></div>
+
+    <!-- هدر / نویگیشن -->
+    <header class="w-full py-6 px-4 sm:px-8 lg:px-16 flex justify-between items-center z-10 backdrop-blur-lg border-b border-white/5 bg-dark-bg/80">
+        <a href="/" class="flex items-center gap-3">
+            <span class="text-4xl font-title tracking-wider text-white">
+                crazy<span class="text-persian-cyan">Dev</span>
+            </span>
+        </a>
+        
+        <a href="/signup" class="flex items-center gap-2 bg-transparent hover:bg-persian-cyan/10 border border-persian-cyan/30 text-persian-cyan py-2 px-4 rounded-lg transition-all duration-300 text-sm">
+            <i class="fas fa-user-plus ml-1"></i>
+            ثبت‌نام جدید
+        </a>
+    </header>
+
+    <!-- بخش اصلی (فرم ورود) -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12 z-10 w-full relative">
+        
+        <div class="bg-[#0d121e] glow-box rounded-2xl w-full max-w-md overflow-hidden relative backdrop-blur-md">
+            
+            <!-- نوار تزئینی بالای فرم -->
+            <div class="h-1 w-full bg-gradient-to-r from-persian-cyan via-persian-blue to-purple-600"></div>
+            
+            <div class="p-8 sm:p-10">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-persian-cyan/20 to-persian-blue/10 border border-persian-blue/30 rounded-2xl flex items-center justify-center text-persian-blue text-3xl mx-auto mb-4 animate-pulse-glow">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                    <h1 class="text-3xl font-title text-white">بازگشت به مرکز فرماندهی</h1>
+                    <p class="text-gray-400 text-sm mt-2 font-mono">Welcome back to the terminal</p>
+                </div>
+
+                <form id="loginForm" class="space-y-6">
+                    <!-- فیلد نام کاربری -->
+                    <div class="relative">
+                        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">نام کاربری</label>
+                        <div class="relative flex items-center">
+                            <div class="absolute right-0 inset-y-0 flex items-center pr-4 pointer-events-none text-persian-blue">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                required 
+                                dir="ltr"
+                                placeholder="root / admin"
+                                class="input-cyber w-full py-3 pr-11 pl-4 rounded-xl text-left text-white placeholder-gray-600 focus:bg-dark-surface"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- فیلد رمز عبور -->
+                    <div class="relative">
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="password" class="block text-sm font-medium text-gray-300">رمز عبور</label>
+                            <a href="#" class="text-xs text-persian-cyan hover:text-persian-cyan-dark transition-colors">فراموشی رمز؟</a>
+                        </div>
+                        <div class="relative flex items-center">
+                            <div class="absolute right-0 inset-y-0 flex items-center pr-4 pointer-events-none text-persian-blue">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                required 
+                                dir="ltr"
+                                placeholder="••••••••"
+                                class="input-cyber w-full py-3 pr-11 pl-4 rounded-xl text-left text-white placeholder-gray-600 focus:bg-dark-surface"
+                            >
+                            <button type="button" id="togglePassword" class="absolute left-0 inset-y-0 flex items-center pl-4 text-gray-400 hover:text-white transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- مرا به خاطر بسپار -->
+                    <div class="flex items-center">
+                        <input id="remember-me" type="checkbox" class="w-4 h-4 text-persian-blue bg-dark-surface border-gray-600 rounded focus:ring-persian-cyan focus:ring-2">
+                        <label for="remember-me" class="ml-2 text-sm text-gray-400 mr-2">من را به خاطر بسپار</label>
+                    </div>
+
+                    <!-- پیام‌های سیستم (خطا یا موفقیت) -->
+                    <div id="formMessage" class="hidden text-sm p-3 rounded-lg border text-center transition-all"></div>
+
+                    <!-- دکمه ورود -->
+                    <button 
+                        type="submit" 
+                        id="submitBtn"
+                        class="w-full bg-persian-blue hover:bg-[#152a8a] text-white font-bold py-3.5 px-8 rounded-xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_5px_20px_rgba(28,57,187,0.4)] flex justify-center items-center gap-2 mt-4"
+                    >
+                        <span>ورود به پنل</span>
+                        <i class="fas fa-sign-in-alt"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="w-full border-t border-white/5 bg-[#080b12] z-10 py-4 text-center">
+        <p class="text-gray-600 text-xs font-mono">crazyDev Authentication Gateway v1.0</p>
+    </footer>
+
+    <!-- اسکریپت‌های مربوط به فرم و API -->
+    <script>
+        // نمایش و مخفی کردن رمز عبور
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        // هندل کردن فرم ورود
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const formMessage = document.getElementById('formMessage');
+
+            // تغییر حالت دکمه به لودینگ
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-lg"></i> <span>در حال احراز هویت...</span>';
+            submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            
+            formMessage.classList.add('hidden');
+            formMessage.className = 'hidden text-sm p-3 rounded-lg border text-center transition-all mt-4';
+
+            try {
+                // ارسال درخواست به API لاگین
+                const response = await fetch('/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        password: password
+                    })
+                });
+
+                if (response.ok) {
+                    // موفقیت‌آمیز (دریافت توکن)
+                    // const data = await response.json(); 
+                    // localStorage.setItem('token', data.token); // مثال ذخیره توکن
+                    
+                    formMessage.classList.remove('hidden');
+                    formMessage.classList.add('bg-green-500/10', 'border-green-500/30', 'text-green-400');
+                    formMessage.innerHTML = '<i class="fas fa-shield-check ml-1"></i> ورود موفقیت‌آمیز. در حال انتقال...';
+                    
+                    // شبیه‌سازی انتقال به پنل کاربری
+                    setTimeout(() => window.location.href = '/dashboard', 1500);
+                } else {
+                    // خطای سمت سرور (مثبت نبودن لاگین)
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'نام کاربری یا رمز عبور اشتباه است.');
+                }
+            } catch (error) {
+                console.error('Error in login:', error);
+                
+                formMessage.classList.remove('hidden');
+                formMessage.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-400');
+                
+                if(error.message === 'Failed to fetch') {
+                     formMessage.innerHTML = '<i class="fas fa-network-wired ml-1"></i> تلاش برای ورود (API متصل نیست). درخواست POST آماده است.';
+                } else {
+                     formMessage.innerHTML = `<i class="fas fa-exclamation-triangle ml-1"></i> ${error.message}`;
+                }
+            } finally {
+                // برگرداندن دکمه در صورت خطا
+                if(!formMessage.classList.contains('text-green-400')) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>ورود به پنل</span><i class="fas fa-sign-in-alt"></i>';
+                    submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
