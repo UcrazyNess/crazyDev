@@ -4,11 +4,13 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+
+	"crazyDev/migration"
+	"crazyDev/pkg/middleware/authorizeSession"
 )
 
 type Handler struct {
@@ -30,7 +32,7 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 		return
 	}
 	req.Name = strings.ToLower(strings.TrimSpace(req.Name))
-	var existingUser User
+	var existingUser migration.User
 	err := h.db.Where("name = ? ", req.Name).First(&existingUser).Error
 	if err == nil {
 		ctx.AbortWithStatusJSON(403, gin.H{
@@ -39,7 +41,8 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 		})
 		return
 	}
-	hashedPassword, err := Hash(req.Password)
+
+	hashedPassword, err := authorizeSession.Hash(req.Password)
 	if err != nil {
 		ctx.AbortWithStatusJSON(500, gin.H{
 			"error":   true,
@@ -47,7 +50,7 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 		})
 		return
 	}
-	newUser := User{
+	newUser := migration.User{
 		Name:     req.Name,
 		Password: hashedPassword, // ذخیره پسورد امن شده
 	}
@@ -58,28 +61,18 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 		})
 		return
 	}
-	session := Session{
-		UserID:       newUser.ID,
-		SessionToken: "",
-		ExpiresAt:    time.Now().Add(24 * time.Hour), // عمر ۲۴ ساعته سشن
+	plaintextToken, err := authorizeSession.Authorize(h.db, newUser)
+	if err == nil {
+		ctx.SetCookie(
+			"session_token",
+			plaintextToken,
+			86400,
+			"/",   // مسیر فعال بودن کوکی
+			"",    // دامنه کلاینت (خالی به معنای دامنه فعلی)
+			false, // گزینه Secure (در صورت وجود SSL روی وب‌سایت ترو کنید)
+			true,
+		)
 	}
-	plaintextToken, err := session.GenerateSessionToken()
-	if err := h.db.Create(&session).Error; err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   true,
-			"message": "خطا در ثبت وضعیت نشست در سرور.",
-		})
-		return
-	}
-	ctx.SetCookie(
-		"session_token",
-		plaintextToken,
-		86400,
-		"/",   // مسیر فعال بودن کوکی
-		"",    // دامنه کلاینت (خالی به معنای دامنه فعلی)
-		false, // گزینه Secure (در صورت وجود SSL روی وب‌سایت ترو کنید)
-		true,
-	)
 	ctx.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": "ثبت‌نام شما با موفقیت انجام شد.",
@@ -103,7 +96,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 	req.Name = strings.ToLower(strings.TrimSpace(req.Name))
-	var targetUser User
+	var targetUser migration.User
 	err := h.db.Where("name = ?", req.Name).First(&targetUser).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -127,27 +120,17 @@ func (h *Handler) Login(ctx *gin.Context) {
 		})
 		return
 	}
-
-	session := Session{
-		UserID:       targetUser.ID,
-		SessionToken: "",
-		ExpiresAt:    time.Now().Add(24 * time.Hour), // عمر ۲۴ ساعته سشن
-	}
-	plaintextToken, err := session.GenerateSessionToken()
-	if err := h.db.Create(&session).Error; err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   true,
-			"message": "خطا در ثبت وضعیت نشست در سرور.",
-		})
-		return
+	plaintextToken, err := authorizeSession.Authorize(h.db, targetUser)
+	if err != nil {
+		ctx.Redirect(500, "/login")
 	}
 	ctx.SetCookie(
 		"session_token",
 		plaintextToken,
 		86400,
-		"/",
-		"",
-		false,
+		"/",   // مسیر فعال بودن کوکی
+		"",    // دامنه کلاینت (خالی به معنای دامنه فعلی)
+		false, // گزینه Secure (در صورت وجود SSL روی وب‌سایت ترو کنید)
 		true,
 	)
 	ctx.JSON(http.StatusOK, gin.H{
@@ -161,7 +144,18 @@ func (h *Handler) Login(ctx *gin.Context) {
 }
 
 func (h *Handler) Show(ctx *gin.Context) {
-
+	val, ok := ctx.Get("user")
+	if !ok {
+		ctx.Redirect(302, "/login")
+		return
+	}
+	user := val.(migration.User)
+	ctx.JSON(200, gin.H{
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Name,
+		},
+	})
 }
 func (h *Handler) Update(ctx *gin.Context) {
 

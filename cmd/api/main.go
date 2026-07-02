@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"crazyDev/internal/user"
+	"crazyDev/migration"
 	"crazyDev/pkg/config"
 	"crazyDev/pkg/dbsqli"
 	"crazyDev/pkg/routing"
@@ -17,8 +18,9 @@ func main() {
 	config.Load()
 	db, err := dbsqli.NewDB(config.Envs().DBPath)
 	migrations := []dbsqli.Migration{
-		{Model: &user.User{}, TableName: "Users"},
-		{Model: &user.Session{}, TableName: "Sessions"}}
+		{Model: &migration.User{}, TableName: "Users"},
+		{Model: &migration.Session{}, TableName: "session"},
+	}
 	dbsqli.RunMigrations(db, migrations...)
 	if err != nil {
 		log.Fatalf("Database connection failed: %v", err)

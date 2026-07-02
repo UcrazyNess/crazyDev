@@ -1,8 +1,6 @@
-package user
+package migration
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 
 	"crazyDev/pkg/dbsqli"
@@ -17,10 +15,11 @@ type User struct {
 }
 
 // Session مدل سشن برای مدیریت نشست‌ها
-type Session struct {
-	UserID       uint      `json:"user_id" gorm:"not null;index"`
-	User         User      `json:"-" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
-	SessionToken string    `json:"session_token" gorm:"unique;not null;index"`
-	ExpiresAt    time.Time `json:"expires_at" gorm:"not null"`
-	dbsqli.BaseModel
+
+func GetByID(db *gorm.DB, id uint) *User {
+	var user User
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return nil
+	}
+	return &user
 }
