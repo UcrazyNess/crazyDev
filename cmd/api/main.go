@@ -40,6 +40,7 @@ func main() {
 	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/dashboard", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	})
+
 	user.SetupRouter(router, db)
 	serve.Serve(router.Exec())
 }

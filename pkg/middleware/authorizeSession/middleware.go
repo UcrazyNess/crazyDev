@@ -3,6 +3,7 @@ package authorizeSession
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,4 +45,19 @@ func AuthorizeSession(db *gorm.DB) gin.HandlerFunc {
 		c.Set("user", user)
 		c.Next()
 	}
+}
+
+func DestroySession(db *gorm.DB, c *gin.Context) {
+	sessionToken, err := c.Cookie("session_token")
+	if err != nil {
+		c.SetCookie("session_token", "", -1, "/", "", false, true)
+		return
+	}
+	hash := sha256.Sum256([]byte(sessionToken))
+	hashedToken := hex.EncodeToString(hash[:])
+	err = db.Where("session_token = ?", hashedToken).Delete(&migration.Session{}).Error
+	if err != nil {
+		log.Printf("Error deleting session for token %s: %v", hashedToken, err)
+	}
+	c.SetCookie("session_token", "", -1, "/", "", false, true)
 }

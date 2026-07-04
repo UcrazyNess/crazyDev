@@ -36,6 +36,10 @@ func WithLoger(allow bool) option {
 }
 
 func (r *Router) WithMiddlewares(mdlwrs ...gin.HandlerFunc) *Router {
-	r.grp.Use(mdlwrs...)
-	return r
+	newGrp := r.grp.Group("/")
+	newGrp.Use(mdlwrs...)
+	return &Router{
+		grp: newGrp,
+		app: r.app,
+	}
 }

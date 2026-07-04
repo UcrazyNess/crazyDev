@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
 	"crazyDev/pkg/middleware/authorizeSession"
@@ -15,6 +16,10 @@ func SetupRouter(r *routing.Router, db *gorm.DB) {
 		usrGrp.POST("/login", h.Login)
 		usrGrp.PUT("/", h.Update)
 		usrGrp.DELETE("/", h.Delete)
+		usrGrp.GET("/logout", func(ctx *gin.Context) {
+			authorizeSession.DestroySession(db, ctx)
+			ctx.Redirect(302, "/login")
+		})
 		usrGrp.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/me", h.Show)
 	}
 }
