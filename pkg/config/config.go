@@ -12,7 +12,7 @@ type Config struct {
 	DBPath       string `mapstructure:"DB_PATH"`
 	DbDriver     string `mapstructure:"DB_DRIVER"`
 	DebugMode    bool   `mapstructure:"DEBUG_MODE"`
-	Jwt_Secret   string `mapstructure:"JWT_SECRET"`
+	JwtSecret    string `mapstructure:"JWT_SECRET"`
 	PublicAccess bool   `mapstructure:"ENABLE_PUBLIC_ACCESS"`
 }
 

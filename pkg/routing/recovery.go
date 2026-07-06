@@ -57,7 +57,7 @@ func recovery(ctx *gin.Context, err any) {
 	}
 
 	// فرمت‌نویسی نهایی پیام خطا به همراه لوکیشن دقیق برای نمایش در کادر قرمز رنگ ترمینال
-	formattedErrorMessage := fmt.Sprintf("%s\n\n📍 فایل آسیب‌دیده:\n%s (Line %d)", errMsg, errorFile, errorLine)
+	formattedErrorMessage := fmt.Sprintf("%s\n\n📍 فایل آسیب دیده:\n%s (Line %d)", errMsg, errorFile, errorLine)
 
 	// چاپ کردن لاگ کامل به همراه استک تریس در ترمینال سرور جهت عیب‌یابی توسعه‌دهنده
 	log.Printf("[PANIC RECOVERED] %s\nStack Trace:\n%s", errMsg, string(debug.Stack()))

@@ -4,3 +4,5 @@ DB.db
 cmd/api/main copy.go
 internal/user/route copy.go
 pkg/middleware/authorizeSession/middleware copy.go
+.idea
+trace.out

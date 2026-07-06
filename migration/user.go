@@ -1,9 +1,9 @@
 package migration
 
 import (
-	"gorm.io/gorm"
-
 	"crazyDev/pkg/dbsqli"
+
+	"gorm.io/gorm"
 )
 
 // User مدل کاربر
@@ -12,14 +12,4 @@ type User struct {
 	Password string `json:"-" gorm:"not null"`
 	dbsqli.BaseModel
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
-}
-
-// Session مدل سشن برای مدیریت نشست‌ها
-
-func GetByID(db *gorm.DB, id uint) *User {
-	var user User
-	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
-		return nil
-	}
-	return &user
 }
