@@ -3,7 +3,7 @@ package migration
 import (
 	"time"
 
-	"crazyDev/pkg/dbsqli"
+	"crazyDev/pkg/sqlite"
 )
 
 type Session struct {
@@ -11,5 +11,5 @@ type Session struct {
 	User         User      `json:"-" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 	SessionToken string    `json:"session_token" gorm:"unique;not null;index"`
 	ExpiresAt    time.Time `json:"expires_at" gorm:"not null"`
-	dbsqli.BaseModel
+	sqlite.BaseModel
 }

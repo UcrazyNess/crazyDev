@@ -9,22 +9,22 @@ import (
 	"crazyDev/internal/user"
 	"crazyDev/migration"
 	"crazyDev/pkg/config"
-	"crazyDev/pkg/dbsqli"
 	"crazyDev/pkg/middleware/authorizeSession"
 	"crazyDev/pkg/routing"
 	"crazyDev/pkg/serve"
+	"crazyDev/pkg/sqlite"
 )
 
 func main() {
 	if err := config.Load(); err != nil {
 		log.Fatalf("cant load configs %s", err)
 	}
-	db, err := dbsqli.NewDB(config.Envs().DBPath)
-	migrations := []dbsqli.Migration{
+	db, err := sqlite.NewDB(config.Envs().DBPath)
+	migrations := []sqlite.Migration{
 		{Model: &migration.User{}, TableName: "Users"},
 		{Model: &migration.Session{}, TableName: "session"},
 	}
-	dbsqli.RunMigrations(db, migrations...)
+	sqlite.RunMigrations(db, migrations...)
 	if err != nil {
 		log.Fatalf("Database connection failed: %v", err)
 	}

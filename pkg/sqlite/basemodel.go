@@ -1,4 +1,4 @@
-package dbsqli
+package sqlite
 
 import "time"
 
