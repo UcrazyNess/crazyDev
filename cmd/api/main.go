@@ -16,7 +16,9 @@ import (
 )
 
 func main() {
-	config.Load()
+	if err := config.Load(); err != nil {
+		log.Fatalf("cant load configs %s", err)
+	}
 	db, err := dbsqli.NewDB(config.Envs().DBPath)
 	migrations := []dbsqli.Migration{
 		{Model: &migration.User{}, TableName: "Users"},
@@ -27,7 +29,7 @@ func main() {
 		log.Fatalf("Database connection failed: %v", err)
 	}
 	serve := serve.NewServe(serve.WithPort(config.Envs().Port), serve.PublicAccess(config.Envs().PublicAccess))
-	router := routing.SetupRouter(routing.WithLoger(config.Envs().DebugMode))
+	router := routing.SetupRouter(routing.WithLogger(config.Envs().DebugMode))
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "welcome.html", gin.H{})
 	})

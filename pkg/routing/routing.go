@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type option func(*gin.Engine)
+type Option func(*gin.Engine)
 
-func SetupRouter(opts ...option) *Router {
+func SetupRouter(opts ...Option) *Router {
 
 	app := gin.New()
 	app.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
@@ -29,9 +29,11 @@ func SetupRouter(opts ...option) *Router {
 	}
 }
 
-func WithLoger(allow bool) option {
+func WithLogger(allow bool) Option {
 	return func(e *gin.Engine) {
-		e.Use(gin.Logger())
+		if allow {
+			e.Use(gin.Logger())
+		}
 	}
 }
 

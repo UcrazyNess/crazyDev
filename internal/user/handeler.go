@@ -21,12 +21,12 @@ func NewHandler(db *gorm.DB) *Handler {
 	return &Handler{db: db}
 }
 
-func (h *Handler) Rgister(ctx *gin.Context) {
+func (h *Handler) Register(ctx *gin.Context) {
 	var req RegisterRequest
 	if err := ctx.ShouldBind(&req); err != nil {
 		ctx.AbortWithStatusJSON(403, gin.H{
 			"error":   true,
-			"message": "اطلاعات ارسالی معتبر نیست. لطفاً ورودی‌ها را بررسی کنید.",
+			"message": "اطلاعات ارسالی معتبر نیست. لطفا ورودی ها را بررسی کنید.",
 			"details": err.Error(),
 		})
 		return
@@ -37,7 +37,7 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 	if err == nil {
 		ctx.AbortWithStatusJSON(403, gin.H{
 			"error":   true,
-			"message": "نام کاربری وارد شده قبلاً در سیستم ثبت شده است.",
+			"message": "نام کاربری وارد شده قبلا در سیستم ثبت شده است.",
 		})
 		return
 	}
@@ -57,7 +57,7 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 	if err := h.db.Create(&newUser).Error; err != nil {
 		ctx.AbortWithStatusJSON(500, gin.H{
 			"error":   true,
-			"message": "خطا در ذخیره‌سازی اطلاعات کاربر در دیتابیس.",
+			"message": "خطا در ذخیره سازی اطلاعات کاربر در دیتابیس.",
 		})
 		return
 	}
@@ -75,7 +75,7 @@ func (h *Handler) Rgister(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusCreated, gin.H{
 		"success": true,
-		"message": "ثبت‌نام شما با موفقیت انجام شد.",
+		"message": "ثبت نام شما با موفقیت انجام شد.",
 		"user": gin.H{
 			"id":         newUser.ID,
 			"username":   newUser.Name,
@@ -157,9 +157,10 @@ func (h *Handler) Show(ctx *gin.Context) {
 		},
 	})
 }
-func (h *Handler) Update(ctx *gin.Context) {
 
-}
-func (h *Handler) Delete(ctx *gin.Context) {
-
-}
+//func (h *Handler) Update(ctx *gin.Context) {
+//
+//}
+//func (h *Handler) Delete(ctx *gin.Context) {
+//
+//}

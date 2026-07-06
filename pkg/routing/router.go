@@ -9,8 +9,6 @@ type Router struct {
 	app *gin.Engine
 }
 
-type routerMethods func(path string, hndlr gin.HandlerFunc)
-
 func (r *Router) GET(path string, hndlr gin.HandlerFunc) {
 	r.grp.GET(path, hndlr)
 }

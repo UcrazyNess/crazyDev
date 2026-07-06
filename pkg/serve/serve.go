@@ -21,9 +21,9 @@ type options struct {
 	Ip   string
 	Port string
 }
-type option func(option *options)
+type Option func(option *options)
 
-func NewServe(opts ...option) *HttpServe {
+func NewServe(opts ...Option) *HttpServe {
 	serv := HttpServe{
 		options: options{
 			Ip:   "127.0.0.1",
@@ -36,12 +36,12 @@ func NewServe(opts ...option) *HttpServe {
 	return &serv
 }
 
-func WithPort(port string) option {
+func WithPort(port string) Option {
 	return func(option *options) {
 		option.Port = port
 	}
 }
-func PublicAccess(allow bool) option {
+func PublicAccess(allow bool) Option {
 	return func(option *options) {
 		if allow {
 			option.Ip = "0.0.0.0"
