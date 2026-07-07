@@ -26,8 +26,7 @@ func Paginate[T any](db *gorm.DB, offset int, limit int, path string) (*Paginati
 		limit = 5
 	}
 
-	var model T
-	if err := db.Model(&model).Count(&totalRows).Error; err != nil {
+	if err := db.Count(&totalRows).Error; err != nil {
 		return nil, err
 	}
 

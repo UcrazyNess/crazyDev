@@ -22,7 +22,8 @@ func NewHandler(db *gorm.DB) *Handler {
 // 1. لیست فریمورک‌ها (همان کدی که خودت نوشتی)
 func (h *Handler) Index(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
-	result, err := sqlite.Paginate[migration.Framework](h.db, offset, 10, c.Request.URL.Path)
+	var frmwrck migration.Framework
+	result, err := sqlite.Paginate[migration.Framework](h.db.Model(&frmwrck), offset, 10, c.Request.URL.Path)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
