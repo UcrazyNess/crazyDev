@@ -55,7 +55,7 @@ func (serv *HttpServe) Serve(handler http.Handler) {
 		Handler: handler,
 	}
 	go func() {
-		log.Printf("Server is running on %s", fullAddr)
+		log.Printf("Server is running on http://%s", fullAddr)
 		if err := serv.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Listen error: %s\n", err)
 		}
