@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"crazyDev/internal/command"
 	"crazyDev/internal/framework"
 	"crazyDev/internal/user"
 	"crazyDev/migration"
@@ -25,6 +26,7 @@ func main() {
 		{Model: &migration.User{}, TableName: "Users"},
 		{Model: &migration.Session{}, TableName: "session"},
 		{Model: &migration.Framework{}, TableName: "framework"},
+		{Model: &migration.Command{}, TableName: "command"},
 	}
 	sqlite.RunMigrations(db, migrations...)
 	if err != nil {
@@ -47,5 +49,6 @@ func main() {
 
 	user.SetupRouter(router, db)
 	framework.SetupRouter(router, db)
+	command.SetupRouter(router, db)
 	serve.Serve(router.Exec())
 }
