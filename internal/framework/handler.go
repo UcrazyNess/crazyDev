@@ -56,7 +56,7 @@ func (h *Handler) Store(c *gin.Context) {
 	}
 
 	if err := h.db.Create(&framework).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در ذخیره‌سازی داده"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در ذخیره سازی داده"})
 		return
 	}
 
