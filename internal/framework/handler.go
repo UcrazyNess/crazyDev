@@ -43,7 +43,6 @@ func (h *Handler) Store(c *gin.Context) {
 		return
 	}
 
-	// تبدیل نام به فرمت استاندارد slug (مثال: "Gin Gonic" -> "gin-gonic")
 	slug := strings.ToLower(strings.ReplaceAll(req.Name, " ", "-"))
 
 	framework := migration.Framework{
@@ -91,7 +90,6 @@ func (h *Handler) Update(c *gin.Context) {
 	slug := c.Param("slug")
 	var framework migration.Framework
 
-	// پیدا کردن رکورد اصلی
 	if err := h.db.Where("slug = ?", slug).First(&framework).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
@@ -107,7 +105,6 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	// استفاده از Updates روی مدل پیدا شده
 	if err := h.db.Model(&framework).Updates(&req).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در بروزرسانی رکورد"})
 		return
@@ -130,7 +127,6 @@ func (h *Handler) Delete(c *gin.Context) {
 		return
 	}
 
-	// حذف مستقیم بر اساس دیتا مدل واکشی شده
 	if err := h.db.Delete(&framework).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در حذف رکورد"})
 		return
