@@ -22,8 +22,7 @@ func NewHandler(db *gorm.DB) *Handler {
 // 1. لیست فریمورک‌ها (همان کدی که خودت نوشتی)
 func (h *Handler) Index(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
-	var frmwrck migration.Framework
-	result, err := sqlite.Paginate[migration.Framework](h.db.Model(&frmwrck), offset, 10, c.Request.URL.Path)
+	result, err := sqlite.Paginate[migration.Framework](h.db, offset, 10, c.Request.URL.Path)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -42,9 +41,7 @@ func (h *Handler) Store(c *gin.Context) {
 		return
 	}
 
-	// 🛠️ ساخت خودکار Slug از روی نام فریمورک (مثال ساده: تبدیل به حروف کوچک و خط تیره)
-	// در دنیای واقعی بهتر است یک تابع کمکی برای این کار در pkg بسازی
-	slug := req.Name // اینجا می‌توانید تابع slugify را صدا بزنید
+	slug := req.Name
 
 	framework := migration.Framework{
 		Name:        req.Name,
@@ -68,13 +65,19 @@ func (h *Handler) Store(c *gin.Context) {
 func (h *Handler) Show(c *gin.Context) {
 	id := c.Param("id")
 	var framework migration.Framework
+	var Count int64
 
-	if err := h.db.First(&framework, id).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
-			return
-		}
+	err := h.db.Preload("Commands", func(db *gorm.DB) *gorm.DB {
+		return db.Order("sort_order IS NULL, sort_order DESC")
+	}).First(&framework, id).Count(&Count).Error
+
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if Count == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
 		return
 	}
 
@@ -84,9 +87,17 @@ func (h *Handler) Show(c *gin.Context) {
 func (h *Handler) Update(c *gin.Context) {
 	id := c.Param("id")
 	var framework migration.Framework
+	var Count int64
 
-	if err := h.db.First(&framework, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک پیدا نشد"})
+	err := h.db.First(&framework, id).Count(&Count).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if Count == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
 		return
 	}
 
@@ -107,6 +118,18 @@ func (h *Handler) Update(c *gin.Context) {
 func (h *Handler) Delete(c *gin.Context) {
 	id := c.Param("id")
 	var framework migration.Framework
+	var Count int64
+
+	err := h.db.First(&framework, id).Count(&Count).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if Count == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+		return
+	}
 
 	if err := h.db.Delete(&framework, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در حذف رکورد"})
