@@ -12,7 +12,7 @@ func SetupRouter(r *routing.Router, db *gorm.DB) {
 	frmwrckGrp := r.WithMiddlewares(authorizeSession.AuthorizeSession(db)).Group("framework")
 	frmwrckGrp.GET("/", h.Index)
 	frmwrckGrp.POST("/", h.Store)
-	frmwrckGrp.PUT("/:id", h.Update)
-	frmwrckGrp.GET("/:id", h.Show)
-	frmwrckGrp.DELETE("/:id", h.Delete)
+	frmwrckGrp.PUT("/:slug", h.Update)
+	frmwrckGrp.GET("/:slug", h.Show)
+	frmwrckGrp.DELETE("/:slug", h.Delete)
 }
