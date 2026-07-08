@@ -1,8 +1,10 @@
 package framework
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -19,12 +21,13 @@ func NewHandler(db *gorm.DB) *Handler {
 	return &Handler{db: db}
 }
 
-// 1. لیست فریمورک‌ها (همان کدی که خودت نوشتی)
+// 1. لیست فریمورک‌ها
 func (h *Handler) Index(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
-	result, err := sqlite.Paginate[migration.Framework](h.db, offset, 10, c.Request.URL.Path)
+	var framework migration.Framework
+	result, err := sqlite.Paginate[migration.Framework](h.db.Model(framework), offset, 10, c.Request.URL.Path)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در دریافت لیست فریمورک‌ها"})
 		return
 	}
 
@@ -35,13 +38,13 @@ func (h *Handler) Index(c *gin.Context) {
 func (h *Handler) Store(c *gin.Context) {
 	var req CreateFrameworkRequest
 
-	// ولیدیشن خودکار ورودی‌ها بر اساس تگ‌های binding
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	slug := req.Name
+	// تبدیل نام به فرمت استاندارد slug (مثال: "Gin Gonic" -> "gin-gonic")
+	slug := strings.ToLower(strings.ReplaceAll(req.Name, " ", "-"))
 
 	framework := migration.Framework{
 		Name:        req.Name,
@@ -61,43 +64,40 @@ func (h *Handler) Store(c *gin.Context) {
 	c.JSON(http.StatusCreated, framework)
 }
 
-// 3. نمایش یک فریمورک خاص بر اساس ID یا Slug (در اینجا بر اساس ID)
+// 3. نمایش یک فریمورک خاص بر اساس Slug
 func (h *Handler) Show(c *gin.Context) {
-	id := c.Param("id")
+	slug := c.Param("slug")
 	var framework migration.Framework
-	var Count int64
 
+	// حذف زواید Count و اعمال درست Preload و کوئری اول
 	err := h.db.Preload("Commands", func(db *gorm.DB) *gorm.DB {
 		return db.Order("sort_order IS NULL, sort_order DESC")
-	}).First(&framework, id).Count(&Count).Error
+	}).Where("slug = ?", slug).First(&framework).Error
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if Count == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در بازیابی اطلاعات"})
 		return
 	}
 
 	c.JSON(http.StatusOK, framework)
 }
 
+// 4. بروزرسانی فریمورک
 func (h *Handler) Update(c *gin.Context) {
-	id := c.Param("id")
+	slug := c.Param("slug")
 	var framework migration.Framework
-	var Count int64
 
-	err := h.db.First(&framework, id).Count(&Count).Error
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if Count == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+	// پیدا کردن رکورد اصلی
+	if err := h.db.Where("slug = ?", slug).First(&framework).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در بررسی اطلاعات دیتابیس"})
 		return
 	}
 
@@ -107,31 +107,31 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
+	// استفاده از Updates روی مدل پیدا شده
 	if err := h.db.Model(&framework).Updates(&req).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در بروزرسانی"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در بروزرسانی رکورد"})
 		return
 	}
 
 	c.JSON(http.StatusOK, framework)
 }
 
+// 5. حذف فریمورک
 func (h *Handler) Delete(c *gin.Context) {
-	id := c.Param("id")
+	slug := c.Param("slug")
 	var framework migration.Framework
-	var Count int64
 
-	err := h.db.First(&framework, id).Count(&Count).Error
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	if Count == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+	if err := h.db.Where("slug = ?", slug).First(&framework).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "فریمورک مورد نظر پیدا نشد"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در بررسی اطلاعات دیتابیس"})
 		return
 	}
 
-	if err := h.db.Delete(&framework, id).Error; err != nil {
+	// حذف مستقیم بر اساس دیتا مدل واکشی شده
+	if err := h.db.Delete(&framework).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در حذف رکورد"})
 		return
 	}
