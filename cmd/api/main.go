@@ -8,6 +8,7 @@ import (
 
 	"crazyDev/internal/command"
 	"crazyDev/internal/framework"
+	"crazyDev/internal/microservice"
 	"crazyDev/internal/user"
 	"crazyDev/migration"
 	"crazyDev/pkg/config"
@@ -27,6 +28,7 @@ func main() {
 		{Model: &migration.Session{}, TableName: "session"},
 		{Model: &migration.Framework{}, TableName: "framework"},
 		{Model: &migration.Command{}, TableName: "command"},
+		{Model: &migration.Microservice{}, TableName: "microservice"},
 	}
 	sqlite.RunMigrations(db, migrations...)
 	if err != nil {
@@ -46,9 +48,17 @@ func main() {
 	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/dashboard", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	})
+	router.GET("/frameworks", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "frameworks.html", gin.H{})
+	})
+	router.GET("/microservices", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "microservices.html", gin.H{})
+	})
 
 	user.SetupRouter(router, db)
 	framework.SetupRouter(router, db)
 	command.SetupRouter(router, db)
+	microservice.SetupRouter(router, db)
 	serve.Serve(router.Exec())
+
 }
