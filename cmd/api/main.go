@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"crazyDev/internal/command"
+	"crazyDev/internal/compose"
 	"crazyDev/internal/framework"
 	"crazyDev/internal/microservice"
 	"crazyDev/internal/user"
@@ -59,6 +60,7 @@ func main() {
 	framework.SetupRouter(router, db)
 	command.SetupRouter(router, db)
 	microservice.SetupRouter(router, db)
+	compose.SetupRouter(router, db)
 	serve.Serve(router.Exec())
 
 }
