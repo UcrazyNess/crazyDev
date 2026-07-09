@@ -175,7 +175,7 @@
                 
                 <div class="flex items-center justify-between mt-auto border-t border-white/5 pt-4">
                     <span class="text-xs text-gray-500 font-mono"><i class="fas fa-clock mr-1"></i> آماده پیکربندی</span>
-                    <button class="text-purple-400 hover:text-purple-300 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <button onclick="frameworks()"  class="text-purple-400 hover:text-purple-300 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
                         ورود به بخش <i class="fas fa-arrow-left text-xs"></i>
                     </button>
                 </div>
@@ -200,7 +200,7 @@
                 
                 <div class="flex items-center justify-between mt-auto border-t border-white/5 pt-4">
                     <span class="text-xs text-gray-500 font-mono"><i class="fas fa-database mr-1"></i> مدیریت سرویس‌ها</span>
-                    <button class="text-persian-gold hover:text-yellow-300 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <button onclick="microservices()"  class="text-persian-gold hover:text-yellow-300 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
                         ورود به بخش <i class="fas fa-arrow-left text-xs"></i>
                     </button>
                 </div>
@@ -295,6 +295,12 @@
 
         function logout() {
             window.location.href = '/user/logout';
+        }
+        function frameworks() {
+            window.location.href = '/frameworks';
+        }
+        function microservices() {
+            window.location.href = '/microservices';
         }
     </script>
 </body>

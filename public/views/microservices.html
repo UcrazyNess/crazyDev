@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crazyDev | مدیریت میکروسرویس‌ها</title>
+    
+    <!-- فونت لاله زار برای تیترها -->
+    <link href="/static/assets/css2.css?family=Lalezar&display=swap" rel="stylesheet">
+
+    
+    <!-- Tailwind CSS -->
+    <script src="/static/js/3.4.17.js"></script>
+
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="/static/assets/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['system-ui', '-apple-system', 'sans-serif'], // در پروژه اصلی با Shabnam جایگزین کنید
+                        title: ['Lalezar', 'cursive'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        'persian-blue': '#1C39BB',
+                        'persian-cyan': '#00E5FF',
+                        'persian-cyan-dark': '#0097A7',
+                        'persian-gold': '#D4AF37',
+                        'dark-bg': '#0B0F19',
+                        'dark-surface': '#151C2C',
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.8, transform: 'scale(1)', boxShadow: '0 0 20px rgba(0, 229, 255, 0.3)' },
+                            '50%': { opacity: 1, transform: 'scale(1.02)', boxShadow: '0 0 35px rgba(0, 229, 255, 0.6)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(to left, #00E5FF, #1C39BB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .text-gradient-gold {
+            background: linear-gradient(to left, #D4AF37, #fde047);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .glow-box {
+            background: rgba(21, 28, 44, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 0 20px rgba(28, 57, 187, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glow-box:hover {
+            border-color: rgba(212, 175, 55, 0.4) !important;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        /* Custom Scrollbar for Textareas and Modals */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
+    </style>
+</head>
+<body class="bg-dark-bg font-sans bg-pattern relative min-h-screen flex flex-col">
+
+    <!-- هاله‌های نئونی پس‌زمینه -->
+    <div class="fixed top-[20%] right-[-5%] w-[400px] h-[400px] bg-persian-gold opacity-5 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-10%] left-[-5%] w-[300px] h-[300px] bg-purple-600 opacity-5 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <!-- هدر / نویگیشن بار -->
+    <header class="w-full py-4 px-4 sm:px-8 flex justify-between items-center z-20 sticky top-0 backdrop-blur-xl border-b border-white/10 bg-dark-bg/80 shadow-lg">
+        <div class="flex items-center gap-6">
+            <a href="/" class="flex items-center gap-2">
+                <span class="text-3xl font-title tracking-wider text-white drop-shadow-md">
+                    crazy<span class="text-persian-cyan">Dev</span>
+                </span>
+            </a>
+            <div class="hidden md:flex items-center gap-2 text-sm text-gray-400 bg-dark-surface px-4 py-2 rounded-xl border border-white/5">
+                <i class="fas fa-chevron-left text-[10px]"></i>
+                <span class="font-title tracking-wide">مدیریت میکروسرویس‌ها</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <a href="/" class="text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                بازگشت به داشبورد <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- محتوای اصلی -->
+    <main class="flex-grow z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-8">
+        
+        <!-- هدر بخش لیست -->
+        <section class="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#111827]/80 backdrop-blur-sm border border-white/5 p-6 md:p-8 rounded-2xl shadow-xl relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-1 h-full bg-gradient-to-b from-persian-gold to-yellow-600"></div>
+            
+            <div class="flex flex-col gap-2">
+                <h1 class="text-2xl md:text-3xl font-title text-white flex items-center gap-3">
+                    <div class="w-10 h-10 bg-persian-gold/10 border border-persian-gold/30 rounded-lg flex items-center justify-center text-persian-gold">
+                        <i class="fas fa-cubes text-xl"></i>
+                    </div>
+                    رجیستری میکروسرویس‌ها
+                </h1>
+                <p class="text-gray-400 text-sm mt-1">لیست پیکربندی سرویس‌های پایه و پردازشی برای اضافه شدن به Docker Compose</p>
+            </div>
+            
+            <div class="mt-6 md:mt-0 w-full md:w-auto">
+                <button onclick="openModal()" class="w-full md:w-auto bg-persian-gold/10 border border-persian-gold text-persian-gold hover:bg-persian-gold hover:text-dark-bg font-bold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(212,175,55,0.15)] hover:shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+                    <i class="fas fa-plus"></i>
+                    افزودن میکروسرویس جدید
+                </button>
+            </div>
+        </section>
+
+        <!-- لیست گرید سرویس‌ها -->
+        <section id="microservices-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative min-h-[200px]">
+            <!-- Skeleton Loader -->
+            <div class="col-span-full flex justify-center items-center py-20 text-persian-gold">
+                <i class="fas fa-circle-notch fa-spin text-4xl"></i>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Form (ایجاد / ویرایش) -->
+    <div id="form-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-dark-surface border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative transform scale-95 transition-transform duration-300" id="form-modal-content">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-white/10">
+                <h2 id="modal-title" class="text-2xl font-title text-white flex items-center gap-2">
+                    <!-- Title injected by JS -->
+                </h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Form) -->
+            <div class="p-6 overflow-y-auto">
+                <form id="microservice-form" class="space-y-5" onsubmit="handleFormSubmit(event)">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        
+                        <!-- نام میکروسرویس -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-300 mb-1">نام سرویس (انگلیسی) <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" required placeholder="e.g. backend-api" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-persian-gold focus:ring-1 focus:ring-persian-gold transition-colors font-mono" dir="ltr">
+                        </div>
+
+                        <!-- نوع سورس -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">نوع سورس (Source Type) <span class="text-red-500">*</span></label>
+                            <div class="flex gap-4">
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="source_type" value="pull" checked class="peer sr-only" onchange="toggleSourceFields()">
+                                    <div class="bg-dark-bg border border-white/10 rounded-xl p-3 text-center peer-checked:border-persian-cyan peer-checked:bg-persian-cyan/10 peer-checked:text-persian-cyan transition-all hover:border-white/20">
+                                        <i class="fas fa-cloud-download-alt mb-1 block text-lg"></i> Pull (Image)
+                                    </div>
+                                </label>
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="source_type" value="build" class="peer sr-only" onchange="toggleSourceFields()">
+                                    <div class="bg-dark-bg border border-white/10 rounded-xl p-3 text-center peer-checked:border-persian-gold peer-checked:bg-persian-gold/10 peer-checked:text-persian-gold transition-all hover:border-white/20">
+                                        <i class="fas fa-hammer mb-1 block text-lg"></i> Build (Dockerfile)
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- بخش Pull -->
+                        <div id="pull_section" class="md:col-span-2 transition-all duration-300">
+                            <label class="block text-sm font-medium text-gray-300 mb-1">تصویر داکر (Image Name) <span class="text-red-500">*</span></label>
+                            <input type="text" name="image" placeholder="e.g. redis:alpine یا nginx:latest" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-persian-cyan focus:ring-1 focus:ring-persian-cyan transition-colors font-mono text-sm" dir="ltr">
+                        </div>
+
+                        <!-- بخش Build -->
+                        <div id="build_section" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 hidden transition-all duration-300 opacity-0">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">آدرس Build Context <span class="text-red-500">*</span></label>
+                                <input type="text" name="build" placeholder="e.g. ./services/api" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-persian-gold focus:ring-1 focus:ring-persian-gold transition-colors font-mono text-sm" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">نام Dockerfile (اختیاری)</label>
+                                <input type="text" name="dockerfile" placeholder="e.g. Dockerfile.prod" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-persian-gold focus:ring-1 focus:ring-persian-gold transition-colors font-mono text-sm" dir="ltr">
+                            </div>
+                        </div>
+
+                        <!-- تنظیمات پیشرفته - جداکننده -->
+                        <div class="md:col-span-2 mt-2">
+                            <div class="flex items-center gap-4">
+                                <div class="h-px bg-white/10 flex-grow"></div>
+                                <span class="text-xs text-gray-500 font-title tracking-wider">تنظیمات پیشرفته داکر</span>
+                                <div class="h-px bg-white/10 flex-grow"></div>
+                            </div>
+                        </div>
+
+                        <!-- Restart Policy -->
+                        <div class="md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-300 mb-1">سیاست ری‌استارت (Restart)</label>
+                            <div class="relative">
+                                <select name="restart" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors font-mono text-sm appearance-none" dir="ltr">
+                                    <option value="no">no (پیش‌فرض)</option>
+                                    <option value="always">always</option>
+                                    <option value="on-failure">on-failure</option>
+                                    <option value="unless-stopped">unless-stopped</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Command -->
+                        <div class="md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-300 mb-1">دستور اجرا (Command)</label>
+                            <input type="text" name="command" placeholder="e.g. npm run start" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors font-mono text-sm" dir="ltr">
+                        </div>
+
+                        <!-- Environment Variables -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-300 mb-1">متغیرهای محیطی (Environment)</label>
+                            <textarea name="environment" rows="3" placeholder="NODE_ENV=production&#10;PORT=8080" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors font-mono text-sm leading-relaxed" dir="ltr"></textarea>
+                            <p class="text-[11px] text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>هر متغیر را در یک خط و با فرمت <code>KEY=VALUE</code> وارد کنید.</p>
+                        </div>
+
+                        <!-- Healthcheck -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-300 mb-1">بررسی سلامت (Healthcheck)</label>
+                            <textarea name="healthcheck" rows="2" placeholder="test: ['CMD', 'curl', '-f', 'http://localhost']&#10;interval: 30s" class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-colors font-mono text-sm" dir="ltr"></textarea>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-white/10 bg-dark-surface/50 rounded-b-2xl flex justify-end gap-3">
+                <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-colors font-medium">انصراف</button>
+                <button type="submit" form="microservice-form" class="bg-gradient-to-r from-persian-gold to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-dark-bg font-bold px-8 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(212,175,55,0.3)] flex items-center gap-2">
+                    <i class="fas fa-save"></i>
+                    ذخیره سرویس
+                </button>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Modal Delete Confirmation -->
+    <div id="delete-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-dark-surface border border-red-500/30 rounded-2xl p-8 w-full max-w-sm text-center shadow-[0_0_40px_rgba(239,68,68,0.15)] transform scale-95 transition-transform duration-300" id="delete-modal-content">
+            <div class="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center text-red-500 text-3xl mx-auto mb-6 shadow-inner shadow-red-500/20">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <h3 class="text-2xl font-title text-white mb-2">حذف میکروسرویس</h3>
+            <p class="text-gray-400 text-sm mb-8 leading-relaxed">آیا از حذف این رکورد اطمینان دارید؟ تمامی تنظیمات این سرویس برای همیشه از پایگاه داده پاک خواهد شد.</p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="closeDeleteModal()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-gray-400 bg-white/5 hover:bg-white/10 transition-colors font-medium border border-white/5">انصراف</button>
+                <button onclick="confirmDelete()" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-red-500/20 flex justify-center items-center gap-2">
+                    <i class="fas fa-check"></i>
+                    بله، حذف کن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let microservicesData = [];
+        let currentEditId = null;
+        let currentDeleteId = null;
+        
+        // Base API Route
+        const API_BASE = '/microservice';
+
+        // Load Data on Initialization
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        async function loadData() {
+            const grid = document.getElementById('microservices-grid');
+            try {
+                const res = await fetch(API_BASE);
+                if (res.ok) {
+                    const responseData = await res.json();
+                    // کنترل ساختار بازگشتی بک‌اند (آرایه یا آبجکت دارای pagination)
+                    microservicesData = Array.isArray(responseData) ? responseData : (responseData.items || responseData.data || []);
+                    renderGrid();
+                } else {
+                    throw new Error('مشکل در دریافت داده‌ها');
+                }
+            } catch (error) {
+                console.warn('API connection failed. Loading dummy data for UI preview.');
+                // Dummy data for visual presentation if Go backend is offline
+                microservicesData = [
+                    { slug: 'api-gateway', name: 'API Gateway', source_type: 'build', build: './gateway', restart: 'always', environment: 'PORT=8000\nNODE_ENV=prod' },
+                    { slug: 'redis-cache', name: 'Redis Cache', source_type: 'pull', image: 'redis:alpine', restart: 'unless-stopped' },
+                    { slug: 'postgres-db', name: 'PostgreSQL', source_type: 'pull', image: 'postgres:15', restart: 'on-failure', environment: 'POSTGRES_USER=admin' }
+                ];
+                renderGrid();
+                showToast('حالت آفلاین: در حال نمایش داده‌های نمونه', 'info');
+            }
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('microservices-grid');
+            
+            if (microservicesData.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-16 px-4 text-center bg-dark-surface/30 rounded-2xl border border-white/5 border-dashed">
+                        <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-500 text-2xl mb-4">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <h3 class="text-white font-title text-xl mb-1">لیست سرویس‌ها خالی است</h3>
+                        <p class="text-gray-500 text-sm max-w-sm">برای شروع، روی دکمه "افزودن میکروسرویس جدید" در بالای صفحه کلیک کنید.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = microservicesData.map(item => {
+                const identifier = item.slug || item.id || item.ID;
+                const isPull = item.source_type === 'pull';
+                
+                return `
+                <div class="glow-box rounded-2xl p-6 relative overflow-hidden group flex flex-col h-full bg-[#111827]/60" style="border-color: rgba(212, 175, 55, 0.1);">
+                    <!-- Header -->
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="w-12 h-12 bg-dark-bg border border-white/5 rounded-xl flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                            ${isPull 
+                                ? '<i class="fab fa-docker text-persian-cyan drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]"></i>' 
+                                : '<i class="fas fa-code-branch text-persian-gold drop-shadow-[0_0_8px_rgba(212,175,55,0.5)]"></i>'}
+                        </div>
+                        
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-[-10px] group-hover:translate-y-0">
+                            <button onclick="openModal('${identifier}')" class="text-gray-400 hover:text-persian-gold bg-dark-bg border border-white/5 w-8 h-8 rounded-lg flex items-center justify-center transition-colors" title="ویرایش">
+                                <i class="fas fa-edit text-xs"></i>
+                            </button>
+                            <button onclick="openDeleteModal('${identifier}')" class="text-gray-400 hover:text-red-500 bg-dark-bg border border-white/5 w-8 h-8 rounded-lg flex items-center justify-center transition-colors" title="حذف">
+                                <i class="fas fa-trash-alt text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <h3 class="text-xl font-bold text-white mb-1 truncate" dir="ltr">${item.name}</h3>
+                    
+                    <div class="flex gap-2 mb-5">
+                        <span class="text-[10px] uppercase tracking-wider font-mono px-2 py-1 rounded bg-white/5 border border-white/10 ${isPull ? 'text-persian-cyan' : 'text-persian-gold'} flex items-center gap-1">
+                            ${isPull ? '<i class="fas fa-cloud-download-alt"></i>' : '<i class="fas fa-hammer"></i>'} ${item.source_type}
+                        </span>
+                        <span class="text-[10px] uppercase tracking-wider font-mono px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-400">
+                            <i class="fas fa-sync-alt mr-1"></i> ${item.restart && item.restart !== 'no' ? item.restart : 'No Restart'}
+                        </span>
+                    </div>
+
+                    <!-- Details Area -->
+                    <div class="mt-auto bg-dark-bg/80 p-3 rounded-xl border border-white/5 font-mono text-xs text-gray-400 flex flex-col gap-2">
+                        <div class="flex items-center gap-2 truncate" dir="ltr" title="${isPull ? item.image : item.build}">
+                            <span class="text-gray-500 shrink-0">${isPull ? 'IMAGE:' : 'BUILD:'}</span>
+                            <span class="${isPull ? 'text-persian-cyan' : 'text-persian-gold'} truncate">
+                                ${isPull ? (item.image || 'N/A') : (item.build || 'N/A')}
+                            </span>
+                        </div>
+                        
+                        ${item.environment ? `
+                        <div class="w-full h-px bg-white/5"></div>
+                        <div class="flex items-center gap-2 truncate" dir="ltr">
+                            <span class="text-gray-500 shrink-0">ENV:</span>
+                            <span class="text-purple-400 truncate">${item.environment.split('\\n')[0]} ${item.environment.includes('\\n') ? '...' : ''}</span>
+                        </div>` : ''}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // فرم و مدیریت Modal
+        function toggleSourceFields() {
+            const sourceType = document.querySelector('input[name="source_type"]:checked').value;
+            const buildSection = document.getElementById('build_section');
+            const pullSection = document.getElementById('pull_section');
+            
+            if (sourceType === 'pull') {
+                buildSection.classList.add('hidden', 'opacity-0');
+                pullSection.classList.remove('hidden');
+                setTimeout(() => pullSection.classList.remove('opacity-0'), 10);
+            } else {
+                pullSection.classList.add('hidden', 'opacity-0');
+                buildSection.classList.remove('hidden');
+                setTimeout(() => buildSection.classList.remove('opacity-0'), 10);
+            }
+        }
+
+        function openModal(id = null) {
+            currentEditId = id;
+            const modal = document.getElementById('form-modal');
+            const modalContent = document.getElementById('form-modal-content');
+            const form = document.getElementById('microservice-form');
+            const modalTitle = document.getElementById('modal-title');
+            
+            form.reset();
+            
+            if (id) {
+                modalTitle.innerHTML = '<i class="fas fa-edit text-persian-gold text-lg"></i> ویرایش پیکربندی';
+                const item = microservicesData.find(m => (m.slug || m.id || m.ID).toString() === id.toString());
+                
+                if (item) {
+                    form.name.value = item.name || '';
+                    
+                    const radios = form.elements['source_type'];
+                    if (radios) {
+                        Array.from(radios).forEach(r => r.checked = (r.value === (item.source_type || 'pull')));
+                    }
+                    
+                    form.image.value = item.image || '';
+                    form.build.value = item.build || '';
+                    form.dockerfile.value = item.dockerfile || '';
+                    form.restart.value = item.restart || 'no';
+                    form.command.value = item.command || '';
+                    form.environment.value = item.environment || '';
+                    form.healthcheck.value = item.healthcheck || '';
+                }
+            } else {
+                modalTitle.innerHTML = '<i class="fas fa-plus-circle text-persian-gold text-lg"></i> ایجاد میکروسرویس جدید';
+            }
+            
+            toggleSourceFields();
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Animation Trigger
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('form-modal');
+            const modalContent = document.getElementById('form-modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Validation based on backend rules
+            if (data.source_type === 'pull') {
+                data.build = '';
+                data.dockerfile = '';
+                if (!data.image.trim()) return showToast('وقتی وضعیت pull است، نام Image اجباری است.', 'error');
+            } else {
+                data.image = '';
+                if (!data.build.trim()) return showToast('وقتی وضعیت build است، مسیر Build اجباری است.', 'error');
+            }
+
+            const url = currentEditId ? `${API_BASE}/${currentEditId}` : `${API_BASE}/`;
+            const method = currentEditId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showToast(`سرویس با موفقیت ${currentEditId ? 'بروزرسانی' : 'ایجاد'} شد`);
+                    closeModal();
+                    loadData();
+                } else {
+                    const err = await res.json().catch(() => ({error: 'خطای ارتباط با سرور'}));
+                    showToast(err.error, 'error');
+                }
+            } catch (err) {
+                // Fallback for Preview
+                if(currentEditId) {
+                    const idx = microservicesData.findIndex(m => (m.slug || m.id || m.ID).toString() === currentEditId.toString());
+                    if (idx > -1) microservicesData[idx] = { ...microservicesData[idx], ...data };
+                } else {
+                    data.slug = data.name.toLowerCase().replace(/\\s+/g, '-');
+                    microservicesData.push(data);
+                }
+                showToast('[آفلاین] عملیات با موفقیت شبیه‌سازی شد', 'success');
+                closeModal();
+                renderGrid();
+            }
+        }
+
+        // Delete Modal Management
+        function openDeleteModal(id) {
+            currentDeleteId = id;
+            const modal = document.getElementById('delete-modal');
+            const modalContent = document.getElementById('delete-modal-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            const modalContent = document.getElementById('delete-modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                currentDeleteId = null;
+            }, 300);
+        }
+
+        async function confirmDelete() {
+            if (!currentDeleteId) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/${currentDeleteId}`, { method: 'DELETE' });
+                
+                if (res.ok) {
+                    showToast('میکروسرویس با موفقیت حذف شد');
+                    closeDeleteModal();
+                    loadData();
+                } else {
+                    const err = await res.json().catch(() => ({error: 'خطا در حذف'}));
+                    showToast(err.error, 'error');
+                }
+            } catch (err) {
+                // Fallback for preview
+                microservicesData = microservicesData.filter(m => (m.slug || m.id || m.ID).toString() !== currentDeleteId.toString());
+                showToast('[آفلاین] میکروسرویس حذف شد', 'info');
+                closeDeleteModal();
+                renderGrid();
+            }
+        }
+
+        // Toast Notification System
+        function showToast(msg, type = 'success') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'fixed bottom-6 right-6 z-[100] flex flex-col gap-3 overflow-hidden px-2 pointer-events-none';
+                document.body.appendChild(container);
+            }
+            
+            const toast = document.createElement('div');
+            const isSuccess = type === 'success' || type === 'info';
+            const bgColor = isSuccess ? 'bg-dark-surface' : 'bg-red-900/20';
+            const borderColor = isSuccess ? (type==='info' ? 'border-persian-cyan' : 'border-green-500') : 'border-red-500';
+            const icon = isSuccess ? (type==='info' ? 'fa-info-circle text-persian-cyan' : 'fa-check-circle text-green-400') : 'fa-exclamation-circle text-red-400';
+            
+            toast.className = `flex items-center gap-4 ${bgColor} border ${borderColor} p-4 rounded-xl shadow-lg transform transition-all duration-300 translate-x-[120%] opacity-0 pointer-events-auto backdrop-blur-md`;
+            toast.innerHTML = `
+                <i class="fas ${icon} text-xl"></i>
+                <span class="font-sans text-sm text-white">${msg}</span>
+                <button onclick="this.parentElement.remove()" class="mr-auto text-gray-400 hover:text-white transition-colors ml-[-8px]"><i class="fas fa-times text-xs"></i></button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-x-[120%]', 'opacity-0');
+            }, 10);
+            
+            // Auto Remove
+            setTimeout(() => {
+                if(toast.parentElement) {
+                    toast.classList.add('translate-x-[120%]', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
