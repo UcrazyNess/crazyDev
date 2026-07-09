@@ -1,39 +1,44 @@
 @font-face {
-  font-family: Shabnam;
-  src: url('Shabnam.eot');
-  src: url('Shabnam.eot?#iefix') format('embedded-opentype'),
-       url('webfonts/Shabnam.woff2') format('woff2'),;
+  font-family: 'Shabnam';
+  src: url('/static/webfonts/Shabnam.eot');
+  src: url('/static/webfonts/Shabnam.eot?#iefix') format('embedded-opentype'),
+       url('/static/webfonts/Shabnam.woff2') format('woff2');
   font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: Shabnam;
-  src: url('Shabnam-Bold.eot');
-  src: url('Shabnam-Bold.eot?#iefix') format('embedded-opentype'),
-       url('webfonts/Shabnam-Bold.woff2') format('woff2'),
+  font-family: 'Shabnam';
+  src: url('/static/webfonts/Shabnam-Bold.eot');
+  src: url('/static/webfonts/Shabnam-Bold.eot?#iefix') format('embedded-opentype'),
+       url('/static/webfonts/Shabnam-Bold.woff2') format('woff2');
   font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: Shabnam;
-  src: url('Shabnam-Thin.eot');
-  src: url('Shabnam-Thin.eot?#iefix') format('embedded-opentype'),
-       url('webfonts/Shabnam-Thin.woff2') format('woff2'),
+  font-family: 'Shabnam';
+  src: url('/static/webfonts/Shabnam-Thin.eot');
+  src: url('/static/webfonts/Shabnam-Thin.eot?#iefix') format('embedded-opentype'),
+       url('/static/webfonts/Shabnam-Thin.woff2') format('woff2');
   font-weight: 100;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: Shabnam;
-  src: url('Shabnam-Light.eot');
-  src: url('Shabnam-Light.eot?#iefix') format('embedded-opentype'),
-       url('webfonts/Shabnam-Light.woff2') format('woff2'),
+  font-family: 'Shabnam';
+  src: url('/static/webfonts/Shabnam-Light.eot');
+  src: url('/static/webfonts/Shabnam-Light.eot?#iefix') format('embedded-opentype'),
+       url('/static/webfonts/Shabnam-Light.woff2') format('woff2');
   font-weight: 300;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: Shabnam;
-  src: url('Shabnam-Medium.eot');
-  src: url('Shabnam-Medium.eot?#iefix') format('embedded-opentype'),
-       url('webfonts/Shabnam-Medium.woff2') format('woff2'),
+  font-family: 'Shabnam';
+  src: url('/static/webfonts/Shabnam-Medium.eot');
+  src: url('/static/webfonts/Shabnam-Medium.eot?#iefix') format('embedded-opentype'),
+       url('/static/webfonts/Shabnam-Medium.woff2') format('woff2');
   font-weight: 500;
+  font-style: normal;
 }
