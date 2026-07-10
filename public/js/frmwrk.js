@@ -597,6 +597,56 @@ async function executeDeleteCommand(id) {
     }
 }
 
+
+// ==========================================
+// JSON EXPORT LOGIC
+// ==========================================
+
+function downloadJSON(data, filename) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 4));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", filename);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    showToast(`فایل ${filename} با موفقیت دانلود شد.`, 'success');
+}
+
+function exportAllFrameworks() {
+    if (!frameworksList || frameworksList.length === 0) {
+        showToast('هیچ فریم‌ورکی برای خروجی گرفتن وجود ندارد.', 'error');
+        return;
+    }
+
+    const exportData = {
+        type: "crazyDev_Frameworks_Export",
+        exported_at: new Date().toISOString(),
+        total_frameworks: frameworksList.length,
+        frameworks: frameworksList
+    };
+
+    downloadJSON(exportData, 'all_frameworks.json');
+}
+
+function exportCurrentFramework() {
+    if (!commandsList || commandsList.length === 0) {
+        showToast('هیچ دستوری برای این فریم‌ورک ثبت نشده است.', 'error');
+        return;
+    }
+    
+    const frameworkName = currentCmdFrameworkSlug || 'unknown';
+    const exportData = {
+        framework_slug: frameworkName,
+        exported_at: new Date().toISOString(),
+        total_commands: commandsList.length,
+        commands: commandsList
+    };
+
+    const filename = `${frameworkName}_commands.json`;
+    downloadJSON(exportData, filename);
+}
+
 // ==========================================
 // INITIALIZATION
 // ==========================================

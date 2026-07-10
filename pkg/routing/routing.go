@@ -19,6 +19,7 @@ func SetupRouter(opts ...Option) *Router {
 	}
 	app.LoadHTMLGlob("./public/views/*")
 	app.Static("/static", "./public")
+	app.Static("/storage", "./storage")
 	app.NoRoute(func(ctx *gin.Context) {
 		ctx.HTML(http.StatusNotFound, "404.html", gin.H{})
 	})

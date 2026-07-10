@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crazyDev | داکر کامپوز بیلدر مجلل</title>
+    <link rel="icon" href="/static/assets/favicon.ico" type="image/x-icon">
+    
+      <link href="/static/assets/font-face.css" rel="stylesheet" type="text/css" />
+
+    <!-- فونت لاله زار برای تیترها -->
+    <link href="/static/assets/css2.css?family=Lalezar&display=swap" rel="stylesheet">
+
+    
+    <!-- Tailwind CSS -->
+    <script src="/static/js/3.4.17.js"></script>
+
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="/static/assets/all.min.css">
+    <!-- js-yaml library for real-time live compile and visual reconstruction on edit -->
+    <script src="/static/js/js-yaml.min.js.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Shabnam', 'Tahoma', 'sans-serif'],
+                        title: ['Lalezar', 'cursive'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        'persian-blue': '#1C39BB',
+                        'persian-cyan': '#00E5FF',
+                        'persian-cyan-dark': '#0097A7',
+                        'persian-gold': '#D4AF37',
+                        'dark-bg': '#0B0F19',
+                        'dark-surface': '#151C2C',
+                        'panel-bg': '#111827',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0B0F19; color: #ffffff; overflow-x: hidden; }
+        .text-gradient { background: linear-gradient(to left, #00E5FF, #1C39BB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-purple { background: linear-gradient(to left, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .glow-box {
+            background: rgba(21, 28, 44, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .glow-box-interactive:hover {
+            border-color: rgba(0, 229, 255, 0.4);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        .glow-input {
+            background: rgba(11, 15, 25, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .glow-input:focus {
+            border-color: #00E5FF;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+            outline: none;
+        }
+        
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300e5ff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 12px 20px; border-radius: 8px; backdrop-filter: blur(10px); color: white; display: flex; align-items: center; gap: 12px; transform: translateX(120%); transition: transform 0.3s ease-out; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
+        .toast.error { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
+        .toast.info { background: rgba(0, 229, 255, 0.15); border-color: #00E5FF; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.6); }
+
+        .slide-panel { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    </style>
+</head>
+<body class="bg-dark-bg font-sans bg-pattern relative min-h-screen flex flex-col custom-scroll">
+
+    <!-- Ambient Background Lighting -->
+    <div class="fixed top-[-10%] right-[-5%] w-[500px] h-[500px] bg-persian-cyan opacity-5 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-persian-blue opacity-5 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <header class="w-full py-4 px-4 sm:px-8 flex justify-between items-center z-20 sticky top-0 backdrop-blur-xl border-b border-white/10 bg-dark-bg/80 shadow-lg">
+        <div class="flex items-center gap-6">
+            <a href="/dashboard" class="flex items-center gap-2">
+                <span class="text-3xl font-title tracking-wider text-white drop-shadow-md">
+                    crazy<span class="text-persian-cyan">Dev</span>
+                </span>
+            </a>
+            <div class="hidden md:flex items-center gap-2 text-sm font-mono text-gray-400 bg-dark-surface px-3 py-1.5 rounded-lg border border-white/5">
+                <i class="fab fa-docker text-persian-cyan"></i>
+                <span>کابین هدایت داکر کامپوز</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <button onclick="window.location.href='/dashboard'" class="text-gray-400 hover:text-white text-sm bg-white/5 px-3 py-1.5 rounded-md transition border border-white/10 flex items-center gap-2">
+                <i class="fas fa-arrow-right"></i> بازگشت به پنل اصلی
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-6 relative">
+        
+        <!-- VIEW 1: Data Table (List Composes) -->
+        <div id="view-list" class="flex flex-col gap-6 slide-panel duration-300">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <h1 class="text-3xl font-title text-white flex items-center gap-3">
+                        <i class="fab fa-docker text-persian-cyan animate-pulse"></i> مدیریت پروژه‌های داکر کامپوز
+                    </h1>
+                    <p class="text-gray-400 text-sm mt-2 font-sans">بلاک‌های بصری و اتصالات شبکه‌ای خود را سازماندهی کنید.</p>
+                </div>
+                <button onclick="openEditor()" class="w-full sm:w-auto bg-persian-cyan/20 border border-persian-cyan text-persian-cyan hover:bg-persian-cyan hover:text-dark-bg font-bold py-2.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                    <i class="fas fa-plus"></i> ساخت اورکستریشن جدید
+                </button>
+            </div>
+
+            <!-- Dashboard Statistics Mini-cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glow-box rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-persian-cyan">
+                    <div class="w-12 h-12 rounded-lg bg-persian-cyan/10 flex items-center justify-center text-persian-cyan text-xl">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">کل پروژه‌ها</div>
+                        <div class="text-xl font-bold font-mono text-white mt-1" id="stat-total-projects">-</div>
+                    </div>
+                </div>
+                <div class="glow-box rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-persian-gold">
+                    <div class="w-12 h-12 rounded-lg bg-persian-gold/10 flex items-center justify-center text-persian-gold text-xl">
+                        <i class="fas fa-ethernet"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">کل IPهای رزرو شده</div>
+                        <div class="text-xl font-bold font-mono text-white mt-1" id="stat-total-ips">-</div>
+                    </div>
+                </div>
+                <div class="glow-box rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-purple-500">
+                    <div class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 text-xl">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">میکروسرویس‌های آماده</div>
+                        <div class="text-xl font-bold font-mono text-white mt-1" id="stat-total-microservices">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glow-box rounded-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" dir="rtl">
+                        <thead>
+                            <tr class="bg-white/5 border-b border-white/10 text-sm text-gray-300 font-mono">
+                                <th class="py-4 px-6 font-medium text-right">آیدی پروژه</th>
+                                <th class="py-4 px-6 font-medium text-right">نام ارکستراسیون</th>
+                                <th class="py-4 px-6 font-medium text-right">آی‌پی‌های سرور فیزیکی</th>
+                                <th class="py-4 px-6 font-medium text-center">عملیات ابزارها</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compose-table-body" class="text-sm divide-y divide-white/5">
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-gray-500">
+                                    <i class="fas fa-circle-notch fa-spin text-2xl mb-2 text-persian-cyan"></i>
+                                    <p>در حال دریافت اطلاعات از سرور...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="bg-white/5 border-t border-white/10 px-6 py-3 flex items-center justify-between flex-wrap gap-3">
+                    <span class="text-xs text-gray-400 font-mono" id="pagination-info">نمایش داده‌ها</span>
+                    <div class="flex gap-2">
+                        <button id="btn-prev" class="px-3 py-1.5 bg-dark-surface rounded border border-white/10 text-gray-400 hover:text-white disabled:opacity-50 transition text-xs flex items-center gap-1" onclick="changePage(-1)">
+                            <i class="fas fa-chevron-right text-[10px]"></i> قبلی
+                        </button>
+                        <button id="btn-next" class="px-3 py-1.5 bg-dark-surface rounded border border-white/10 text-gray-400 hover:text-white disabled:opacity-50 transition text-xs flex items-center gap-1" onclick="changePage(1)">
+                            بعدی <i class="fas fa-chevron-left text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: Visual Editor (Create/Update) -->
+        <div id="view-editor" class="hidden flex flex-col gap-6 slide-panel opacity-0 duration-300">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-panel-bg p-4 rounded-xl border border-white/10 shadow-lg gap-4">
+                <h2 id="editor-title" class="text-2xl font-title text-gradient">ایجاد کامپوز جدید</h2>
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <button onclick="closeEditor()" class="flex-grow sm:flex-none px-5 py-2 text-sm text-gray-300 hover:bg-white/10 rounded-lg transition border border-white/10">
+                        انصراف
+                    </button>
+                    <button id="btn-save-orchestration" onclick="saveCompose()" class="flex-grow sm:flex-none px-6 py-2 text-sm bg-gradient-to-r from-persian-blue to-persian-cyan text-white font-bold rounded-lg transition shadow-lg hover:shadow-cyan-500/50 flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> ذخیره و تولید نهایی YAML
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- COLUMN 1: General Config & Ready Microservices (Col-span 4) -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    
+                    <!-- General Config Panel -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-persian-cyan">
+                        <h3 class="text-lg font-medium text-white mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                            <i class="fas fa-cog text-persian-cyan"></i> پیکربندی پایه پروژه
+                        </h3>
+                        
+                        <input type="hidden" id="edit-id" value="">
+                        
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-400 mb-1">نام پروژه (Project Name) <span class="text-red-400">*</span></label>
+                            <input type="text" id="inp-project-name" class="w-full p-2.5 rounded-lg glow-input text-sm font-mono" placeholder="my_microservices_stack" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-400 mb-1">نسخه داکر کامپوز (Docker Compose Version)</label>
+                            <input type="text" id="inp-version" class="w-full p-2.5 rounded-lg glow-input text-sm font-mono" value="3.8">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="block text-xs text-gray-400 mb-1">آی‌پی‌های سرور فیزیکی (جداشده با کاما)</label>
+                            <textarea id="inp-ips" rows="2" class="w-full p-2.5 rounded-lg glow-input text-sm font-mono custom-scroll" placeholder="192.168.1.100, 10.0.10.5"></textarea>
+                            <p class="text-[10px] text-gray-500 mt-1">آدرس‌های IP مورد نظر جهت بررسی تداخل در شبکه سرورها</p>
+                        </div>
+                    </div>
+
+                    <!-- Microservices Import Toolbox -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-purple-500 flex flex-col gap-3">
+                        <div class="border-b border-white/10 pb-2 flex justify-between items-center">
+                            <h3 class="text-md font-medium text-white flex items-center gap-2">
+                                <i class="fas fa-layer-group text-purple-400"></i> کاتالوگ میکروسرویس‌ها
+                            </h3>
+                            <span class="text-[10px] bg-purple-500/20 text-purple-300 font-mono px-2 py-0.5 rounded-full" id="microservice-count">0</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">
+                            درج مستقیم میکروسرویس‌های ایجاد شده به ساختار جاری داکر کامپوز با استفاده از کاتالوگ زیرسازمانی.
+                        </p>
+                        
+                        <!-- Search Bar -->
+                        <div class="relative">
+                            <input type="text" id="search-microservice" onkeyup="filterMicroservices()" class="w-full pl-3 pr-8 py-1.5 rounded-lg glow-input text-xs" placeholder="جستجو در میکروسرویس‌ها...">
+                            <i class="fas fa-search absolute left-auto right-3 top-2.5 text-xs text-gray-500"></i>
+                        </div>
+
+                        <!-- Microservices List Scrollable Container -->
+                        <div id="microservice-list-container" class="max-h-[280px] overflow-y-auto custom-scroll flex flex-col gap-2 pr-1">
+                            <div class="text-center py-4 text-gray-500 text-xs">در حال بارگذاری لیست میکروسرویس‌ها...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMN 2: Visual Builder (Col-span 8) -->
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    
+                    <!-- Services Block Area -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-purple-400">
+                        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                            <h3 class="text-lg font-medium text-white flex items-center gap-2">
+                                <i class="fas fa-cubes text-purple-400"></i> ساختار سرویس‌های پشته (Services)
+                            </h3>
+                            <button onclick="addServiceBlock()" class="text-xs bg-purple-500/20 text-purple-300 hover:bg-purple-400 hover:text-white px-3.5 py-2 rounded-lg border border-purple-500/30 transition flex items-center gap-1.5">
+                                <i class="fas fa-plus"></i> افزودن سرویس دستی
+                            </button>
+                        </div>
+                        
+                        <!-- Fixed Position for empty message so it does not get destroyed when services are cleared -->
+                        <div class="text-center py-8 text-gray-500 text-sm border border-dashed border-white/10 rounded-lg" id="no-services-msg">
+                            هیچ سرویسی اضافه نشده است. یکی دستی بسازید یا از میکروسرویس‌های کاتالوگ سمت راست استفاده کنید.
+                        </div>
+                        
+                        <div id="services-container" class="flex flex-col gap-4 max-h-[700px] overflow-y-auto custom-scroll pr-1 mt-4">
+                        </div>
+                    </div>
+
+                    <!-- Networks & Volumes Dual Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        <!-- Networks Panel -->
+                        <div class="glow-box rounded-xl p-5 border-t-2 border-t-green-500">
+                            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                                <h3 class="text-md font-medium text-white flex items-center gap-2">
+                                    <i class="fas fa-network-wired text-green-400"></i> شبکه‌های پروژه (Networks)
+                                </h3>
+                                <button onclick="addNetworkBlock()" class="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
+                                    <i class="fas fa-plus-circle"></i> افزودن شبکه
+                                </button>
+                            </div>
+                            <div id="networks-container" class="flex flex-col gap-4"></div>
+                        </div>
+
+                        <!-- Volumes Panel -->
+                        <div class="glow-box rounded-xl p-5 border-t-2 border-t-yellow-500">
+                            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                                <h3 class="text-md font-medium text-white flex items-center gap-2">
+                                    <i class="fas fa-hdd text-yellow-400"></i> والیوم‌ها (Volumes)
+                                </h3>
+                                <button onclick="addVolumeBlock()" class="text-xs text-yellow-400 hover:text-yellow-300 transition-colors flex items-center gap-1">
+                                    <i class="fas fa-plus-circle"></i> افزودن والیوم
+                                </button>
+                            </div>
+                            <div id="volumes-container" class="flex flex-col gap-4"></div>
+                        </div>
+                    </div>
+
+                    <!-- LIVE YAML CODE PREVIEW -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-blue-500 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-3 border-b border-white/10 pb-2">
+                            <h3 class="text-sm font-medium text-blue-400 flex items-center gap-2">
+                                <i class="fas fa-code text-xs"></i> پیش‌نمایش آنی کدهای YAML تولید شده
+                            </h3>
+                            <button onclick="copyYamlToClipboard()" class="text-[10px] bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 px-2 py-1 rounded transition flex items-center gap-1">
+                                <i class="fas fa-copy"></i> کپی کردن کد
+                            </button>
+                        </div>
+                        <pre class="bg-black/40 p-4 rounded-lg font-mono text-xs text-cyan-400 max-h-[350px] overflow-auto custom-scroll border border-white/5" dir="ltr" id="yaml-live-preview"># No services configured yet.</pre>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- UI Toast Notifications Layout -->
+    <div id="toast-container"></div>
+
+    <!-- UI Custom Cyber Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glow-box w-full max-w-md p-6 rounded-xl border border-red-500/30 shadow-[0_0_50px_rgba(239,68,68,0.15)] flex flex-col gap-4">
+            <div class="flex items-center gap-3 border-b border-white/10 pb-3">
+                <div class="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-lg">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="text-lg font-title text-white">تأیید حذف عملیات</h3>
+            </div>
+            <p id="confirm-modal-msg" class="text-sm text-gray-300 leading-relaxed"></p>
+            <div class="flex justify-end gap-3 mt-2">
+                <button id="confirm-btn-cancel" class="px-4 py-2 text-xs text-gray-400 hover:bg-white/5 rounded border border-transparent hover:border-white/10 transition">انصراف</button>
+                <button id="confirm-btn-action" class="px-4 py-2 text-xs bg-red-600 hover:bg-red-500 text-white font-bold rounded transition shadow-md">حذف نهایی</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SERVICE BLOCK HTML TEMPLATE -->
+    <template id="tpl-service">
+        <div class="service-block bg-white/5 border border-white/10 hover:border-white/20 transition-all rounded-lg p-4 relative group flex flex-col gap-3">
+            
+            <button onclick="this.closest('.service-block').remove(); checkEmptyServices(); handleInputChanged();" class="absolute top-3 left-3 text-gray-500 hover:text-red-400 transition z-10" title="حذف سرویس">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">شناسه سرویس (Key) <span class="text-red-400">*</span></label>
+                    <input type="text" data-field="name" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="web_app, mysql_db" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">تصویر داکر (Image) <span class="text-red-400">*</span></label>
+                    <input type="text" data-field="image" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="nginx:stable-alpine" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">نام کانتینر (Container Name)</label>
+                    <input type="text" data-field="container_name" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="crazy-web-server">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">سیاست ری‌استارت (Restart Policy)</label>
+                    <select data-field="restart" onchange="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono">
+                        <option value="">(پیش‌فرض سیستم)</option>
+                        <option value="always">always</option>
+                        <option value="unless-stopped">unless-stopped</option>
+                        <option value="on-failure">on-failure</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">کاربر سیستم (User)</label>
+                    <input type="text" data-field="user" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="root یا 1000:1000">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">دستور نهایی کانتینر (Command)</label>
+                    <input type="text" data-field="command" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="npm start">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] text-gray-400 mb-1">نقطه ورود (Entrypoint)</label>
+                    <input type="text" data-field="entrypoint" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="sh -c">
+                </div>
+            </div>
+
+            <!-- Tabs/Accordions for Advanced Lists -->
+            <div class="border-t border-white/5 pt-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                
+                <!-- Ports Management -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-plug text-[10px] text-persian-cyan"></i> پورت‌ها (Ports)
+                        </span>
+                        <button type="button" onclick="addPort(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="ports-list flex flex-col gap-1"></div>
+                </div>
+                
+                <!-- Environment Variables Management -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-envira text-[10px] text-green-400"></i> متغیرها (Environments)
+                        </span>
+                        <button type="button" onclick="addEnv(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="envs-list flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Service Volumes (Local Paths) -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-folder-open text-[10px] text-yellow-500"></i> والیوم‌های سرویس (Volumes)
+                        </span>
+                        <button type="button" onclick="addServiceVolume(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="service-volumes-list flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Service Depends On -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-network-wired text-[10px] text-blue-400"></i> وابسته به سرویس (Depends On)
+                        </span>
+                        <button type="button" onclick="addServiceDepend(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="service-depends-list flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Service Networks (IP + Aliases) -->
+                <div class="lg:col-span-2 bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-ethernet text-[10px] text-cyan-400"></i> شبکه‌های کانتینر (Networks Mapping)
+                        </span>
+                        <button type="button" onclick="addServiceNetwork(this)" class="text-[10px] text-persian-cyan hover:underline">اتصال به شبکه جدید +</button>
+                    </div>
+                    <div class="service-networks-list grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                </div>
+
+                <!-- Unmapped Properties Fallback (logging, healthcheck, build, labels) -->
+                <div class="lg:col-span-2 bg-red-500/5 p-2.5 rounded-lg border border-red-500/10">
+                    <label class="block text-xs text-red-400 font-mono mb-1 flex items-center gap-1.5">
+                        <i class="fas fa-exclamation-triangle"></i> تنظیمات پیشرفته یا ناشناخته کانتینر (YAML Raw)
+                    </label>
+                    <p class="text-[10px] text-gray-500 mb-1.5">هر گونه فیلد پیشرفته مانند logging، healthcheck، labels یا build را با فرمت معتبر YAML در کادر زیر قرار دهید.</p>
+                    <textarea data-field="extra_config" oninput="handleInputChanged()" rows="4" class="w-full p-2 rounded glow-input text-xs font-mono custom-scroll" placeholder="logging:&#10;  driver: json-file&#10;  options:&#10;    max-size: 10m"></textarea>
+                </div>
+
+            </div>
+        </div>
+    </template>
+
+    <!-- SERVICE VOLUME ROW SUB-TEMPLATE -->
+    <template id="tpl-service-volume">
+        <div class="flex gap-1 items-center volume-row">
+            <input type="text" oninput="handleInputChanged()" class="w-full p-1.5 rounded glow-input text-[11px] font-mono" placeholder="./html:/usr/share/nginx/html یا db_data:/var/lib/mysql">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- SERVICE NETWORK MAPPING ROW SUB-TEMPLATE -->
+    <template id="tpl-service-network">
+        <div class="flex flex-col gap-1.5 p-2 bg-white/5 rounded border border-white/5 service-network-row relative group">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="absolute top-1 left-1 text-gray-500 hover:text-red-400 text-xs transition" title="حذف اتصال به شبکه"><i class="fas fa-times"></i></button>
+            <div class="grid grid-cols-3 gap-1.5 pt-2">
+                <div>
+                    <label class="block text-[8px] text-gray-400 mb-0.5">نام شبکه</label>
+                    <input type="text" data-field="net-name" oninput="handleInputChanged()" class="w-full p-1 rounded glow-input text-[10px] font-mono" placeholder="frontend_net">
+                </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 mb-0.5">آی‌پی کانتینر</label>
+                    <input type="text" data-field="net-ip" oninput="handleInputChanged()" class="w-full p-1 rounded glow-input text-[10px] font-mono" placeholder="172.20.0.5">
+                </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 mb-0.5">Aliases (کاما)</label>
+                    <input type="text" data-field="net-aliases" oninput="handleInputChanged()" class="w-full p-1 rounded glow-input text-[10px] font-mono" placeholder="web-proxy">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- SERVICE DEPENDS ON SUB-TEMPLATE -->
+    <template id="tpl-service-depend">
+        <div class="flex gap-1 items-center depend-row">
+            <input type="text" oninput="handleInputChanged()" class="w-full p-1.5 rounded glow-input text-[11px] font-mono" placeholder="mysql_db">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- PORT ROW SUB-TEMPLATE -->
+    <template id="tpl-port">
+        <div class="flex gap-1 items-center port-row">
+            <input type="text" oninput="handleInputChanged()" class="w-full p-1.5 rounded glow-input text-[11px] font-mono" placeholder="8080:80">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- ENVIRONMENT ROW SUB-TEMPLATE -->
+    <template id="tpl-env">
+        <div class="flex gap-1 items-center env-row">
+            <input type="text" oninput="handleInputChanged()" class="w-1/2 p-1.5 rounded glow-input text-[11px] font-mono" placeholder="MYSQL_DATABASE">
+            <span class="text-gray-500">=</span>
+            <input type="text" oninput="handleInputChanged()" class="w-1/2 p-1.5 rounded glow-input text-[11px] font-mono" placeholder="crazydev_db">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- GLOBAL NETWORK ROW HTML TEMPLATE -->
+    <template id="tpl-network">
+        <div class="network-block flex flex-col gap-2 p-3 bg-white/5 rounded-lg border border-white/5">
+            <div class="flex gap-2 items-center">
+                <input type="text" data-field="name" oninput="handleInputChanged()" class="flex-grow p-1.5 rounded glow-input text-xs font-mono" placeholder="backend_net">
+                <select data-field="driver" onchange="handleInputChanged()" class="w-24 p-1.5 rounded glow-input text-xs font-mono">
+                    <option value="bridge">bridge</option>
+                    <option value="overlay">overlay</option>
+                    <option value="host">host</option>
+                </select>
+                <button onclick="this.closest('.network-block').remove(); handleInputChanged();" class="text-red-400 hover:text-red-300 p-1"><i class="fas fa-times"></i></button>
+            </div>
+            <div>
+                <label class="block text-[8px] text-gray-500 mb-0.5">تنظیمات پیشرفته شبکه (YAML Raw)</label>
+                <textarea data-field="extra" oninput="handleInputChanged()" rows="2" class="w-full p-1.5 rounded glow-input text-[10px] font-mono custom-scroll" placeholder="ipam:&#10;  config:&#10;    - subnet: 172.20.0.0/24"></textarea>
+            </div>
+        </div>
+    </template>
+
+    <!-- GLOBAL VOLUME ROW HTML TEMPLATE -->
+    <template id="tpl-volume">
+        <div class="volume-block flex flex-col gap-2 p-3 bg-white/5 rounded-lg border border-white/5">
+            <div class="flex gap-2 items-center">
+                <input type="text" data-field="name" oninput="handleInputChanged()" class="flex-grow p-1.5 rounded glow-input text-xs font-mono" placeholder="db_store_volume">
+                <button onclick="this.closest('.volume-block').remove(); handleInputChanged();" class="text-red-400 hover:text-red-300 p-1"><i class="fas fa-times"></i></button>
+            </div>
+            <div>
+                <label class="block text-[8px] text-gray-500 mb-0.5">تنظیمات پیشرفته والیوم (YAML Raw)</label>
+                <textarea data-field="extra" oninput="handleInputChanged()" rows="2" class="w-full p-1.5 rounded glow-input text-[10px] font-mono custom-scroll" placeholder="external: true"></textarea>
+            </div>
+        </div>
+    </template>
+
+    <!-- JS SCRIPTING ENGINE -->
+    <script src="/static/js/compose.js"></script>
+</body>
+</html>
