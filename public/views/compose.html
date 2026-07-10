@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crazyDev | داکر کامپوز بیلدر مجلل</title>
+    <link rel="icon" href="/static/assets/favicon.ico" type="image/x-icon">
+    
+      <link href="/static/assets/font-face.css" rel="stylesheet" type="text/css" />
+
+    <!-- فونت لاله زار برای تیترها -->
+    <link href="/static/assets/css2.css?family=Lalezar&display=swap" rel="stylesheet">
+
+    
+    <!-- Tailwind CSS -->
+    <script src="/static/js/3.4.17.js"></script>
+
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="/static/assets/all.min.css">
+    <!-- js-yaml library for real-time live compile and visual reconstruction on edit -->
+    <script src="/static/js/js-yaml.min.js.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Shabnam', 'Tahoma', 'sans-serif'],
+                        title: ['Lalezar', 'cursive'],
+                        mono: ['Courier New', 'Courier', 'monospace'],
+                    },
+                    colors: {
+                        'persian-blue': '#1C39BB',
+                        'persian-cyan': '#00E5FF',
+                        'persian-cyan-dark': '#0097A7',
+                        'persian-gold': '#D4AF37',
+                        'dark-bg': '#0B0F19',
+                        'dark-surface': '#151C2C',
+                        'panel-bg': '#111827',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0B0F19; color: #ffffff; overflow-x: hidden; }
+        .text-gradient { background: linear-gradient(to left, #00E5FF, #1C39BB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-purple { background: linear-gradient(to left, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .glow-box {
+            background: rgba(21, 28, 44, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .glow-box-interactive:hover {
+            border-color: rgba(0, 229, 255, 0.4);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        .glow-input {
+            background: rgba(11, 15, 25, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .glow-input:focus {
+            border-color: #00E5FF;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+            outline: none;
+        }
+        
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300e5ff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 12px 20px; border-radius: 8px; backdrop-filter: blur(10px); color: white; display: flex; align-items: center; gap: 12px; transform: translateX(120%); transition: transform 0.3s ease-out; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
+        .toast.error { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
+        .toast.info { background: rgba(0, 229, 255, 0.15); border-color: #00E5FF; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.6); }
+
+        .slide-panel { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    </style>
+</head>
+<body class="bg-dark-bg font-sans bg-pattern relative min-h-screen flex flex-col custom-scroll">
+
+    <!-- Ambient Background Lighting -->
+    <div class="fixed top-[-10%] right-[-5%] w-[500px] h-[500px] bg-persian-cyan opacity-5 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-persian-blue opacity-5 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <header class="w-full py-4 px-4 sm:px-8 flex justify-between items-center z-20 sticky top-0 backdrop-blur-xl border-b border-white/10 bg-dark-bg/80 shadow-lg">
+        <div class="flex items-center gap-6">
+            <a href="/dashboard" class="flex items-center gap-2">
+                <span class="text-3xl font-title tracking-wider text-white drop-shadow-md">
+                    crazy<span class="text-persian-cyan">Dev</span>
+                </span>
+            </a>
+            <div class="hidden md:flex items-center gap-2 text-sm font-mono text-gray-400 bg-dark-surface px-3 py-1.5 rounded-lg border border-white/5">
+                <i class="fab fa-docker text-persian-cyan"></i>
+                <span>کابین هدایت داکر کامپوز</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <button onclick="window.location.href='/dashboard'" class="text-gray-400 hover:text-white text-sm bg-white/5 px-3 py-1.5 rounded-md transition border border-white/10 flex items-center gap-2">
+                <i class="fas fa-arrow-right"></i> بازگشت به پنل اصلی
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-6 relative">
+        
+        <!-- VIEW 1: Data Table (List Composes) -->
+        <div id="view-list" class="flex flex-col gap-6 slide-panel duration-300">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div>
+                    <h1 class="text-3xl font-title text-white flex items-center gap-3">
+                        <i class="fab fa-docker text-persian-cyan animate-pulse"></i> مدیریت پروژه‌های داکر کامپوز
+                    </h1>
+                    <p class="text-gray-400 text-sm mt-2 font-sans">بلاک‌های بصری و اتصالات شبکه‌ای خود را سازماندهی کنید.</p>
+                </div>
+                <button onclick="openEditor()" class="w-full sm:w-auto bg-persian-cyan/20 border border-persian-cyan text-persian-cyan hover:bg-persian-cyan hover:text-dark-bg font-bold py-2.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                    <i class="fas fa-plus"></i> ساخت اورکستریشن جدید
+                </button>
+            </div>
+
+            <!-- Dashboard Statistics Mini-cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glow-box rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-persian-cyan">
+                    <div class="w-12 h-12 rounded-lg bg-persian-cyan/10 flex items-center justify-center text-persian-cyan text-xl">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">کل پروژه‌ها</div>
+                        <div class="text-xl font-bold font-mono text-white mt-1" id="stat-total-projects">-</div>
+                    </div>
+                </div>
+                <div class="glow-box rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-persian-gold">
+                    <div class="w-12 h-12 rounded-lg bg-persian-gold/10 flex items-center justify-center text-persian-gold text-xl">
+                        <i class="fas fa-ethernet"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">کل IPهای رزرو شده</div>
+                        <div class="text-xl font-bold font-mono text-white mt-1" id="stat-total-ips">-</div>
+                    </div>
+                </div>
+                <div class="glow-box rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-purple-500">
+                    <div class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 text-xl">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">میکروسرویس‌های آماده</div>
+                        <div class="text-xl font-bold font-mono text-white mt-1" id="stat-total-microservices">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glow-box rounded-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" dir="rtl">
+                        <thead>
+                            <tr class="bg-white/5 border-b border-white/10 text-sm text-gray-300 font-mono">
+                                <th class="py-4 px-6 font-medium text-right">آیدی پروژه</th>
+                                <th class="py-4 px-6 font-medium text-right">نام ارکستراسیون</th>
+                                <th class="py-4 px-6 font-medium text-right">آی‌پی‌های سرور فیزیکی</th>
+                                <th class="py-4 px-6 font-medium text-center">عملیات ابزارها</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compose-table-body" class="text-sm divide-y divide-white/5">
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-gray-500">
+                                    <i class="fas fa-circle-notch fa-spin text-2xl mb-2 text-persian-cyan"></i>
+                                    <p>در حال دریافت اطلاعات از سرور...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="bg-white/5 border-t border-white/10 px-6 py-3 flex items-center justify-between flex-wrap gap-3">
+                    <span class="text-xs text-gray-400 font-mono" id="pagination-info">نمایش داده‌ها</span>
+                    <div class="flex gap-2">
+                        <button id="btn-prev" class="px-3 py-1.5 bg-dark-surface rounded border border-white/10 text-gray-400 hover:text-white disabled:opacity-50 transition text-xs flex items-center gap-1" onclick="changePage(-1)">
+                            <i class="fas fa-chevron-right text-[10px]"></i> قبلی
+                        </button>
+                        <button id="btn-next" class="px-3 py-1.5 bg-dark-surface rounded border border-white/10 text-gray-400 hover:text-white disabled:opacity-50 transition text-xs flex items-center gap-1" onclick="changePage(1)">
+                            بعدی <i class="fas fa-chevron-left text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: Visual Editor (Create/Update) -->
+        <div id="view-editor" class="hidden flex flex-col gap-6 slide-panel opacity-0 duration-300">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-panel-bg p-4 rounded-xl border border-white/10 shadow-lg gap-4">
+                <h2 id="editor-title" class="text-2xl font-title text-gradient">ایجاد کامپوز جدید</h2>
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <button onclick="closeEditor()" class="flex-grow sm:flex-none px-5 py-2 text-sm text-gray-300 hover:bg-white/10 rounded-lg transition border border-white/10">
+                        انصراف
+                    </button>
+                    <button id="btn-save-orchestration" onclick="saveCompose()" class="flex-grow sm:flex-none px-6 py-2 text-sm bg-gradient-to-r from-persian-blue to-persian-cyan text-white font-bold rounded-lg transition shadow-lg hover:shadow-cyan-500/50 flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> ذخیره و تولید نهایی YAML
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- COLUMN 1: General Config & Ready Microservices (Col-span 4) -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    
+                    <!-- General Config Panel -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-persian-cyan">
+                        <h3 class="text-lg font-medium text-white mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                            <i class="fas fa-cog text-persian-cyan"></i> پیکربندی پایه پروژه
+                        </h3>
+                        
+                        <input type="hidden" id="edit-id" value="">
+                        
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-400 mb-1">نام پروژه (Project Name) <span class="text-red-400">*</span></label>
+                            <input type="text" id="inp-project-name" class="w-full p-2.5 rounded-lg glow-input text-sm font-mono" placeholder="my_microservices_stack" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-400 mb-1">نسخه داکر کامپوز (Docker Compose Version)</label>
+                            <input type="text" id="inp-version" class="w-full p-2.5 rounded-lg glow-input text-sm font-mono" value="3.8">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="block text-xs text-gray-400 mb-1">آی‌پی‌های سرور فیزیکی (جداشده با کاما)</label>
+                            <textarea id="inp-ips" rows="2" class="w-full p-2.5 rounded-lg glow-input text-sm font-mono custom-scroll" placeholder="192.168.1.100, 10.0.10.5"></textarea>
+                            <p class="text-[10px] text-gray-500 mt-1">آدرس‌های IP مورد نظر جهت بررسی تداخل در شبکه سرورها</p>
+                        </div>
+                    </div>
+
+                    <!-- Microservices Import Toolbox -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-purple-500 flex flex-col gap-3">
+                        <div class="border-b border-white/10 pb-2 flex justify-between items-center">
+                            <h3 class="text-md font-medium text-white flex items-center gap-2">
+                                <i class="fas fa-layer-group text-purple-400"></i> کاتالوگ میکروسرویس‌ها
+                            </h3>
+                            <span class="text-[10px] bg-purple-500/20 text-purple-300 font-mono px-2 py-0.5 rounded-full" id="microservice-count">0</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">
+                            درج مستقیم میکروسرویس‌های ایجاد شده به ساختار جاری داکر کامپوز با استفاده از کاتالوگ زیرسازمانی.
+                        </p>
+                        
+                        <!-- Search Bar -->
+                        <div class="relative">
+                            <input type="text" id="search-microservice" onkeyup="filterMicroservices()" class="w-full pl-3 pr-8 py-1.5 rounded-lg glow-input text-xs" placeholder="جستجو در میکروسرویس‌ها...">
+                            <i class="fas fa-search absolute left-auto right-3 top-2.5 text-xs text-gray-500"></i>
+                        </div>
+
+                        <!-- Microservices List Scrollable Container -->
+                        <div id="microservice-list-container" class="max-h-[280px] overflow-y-auto custom-scroll flex flex-col gap-2 pr-1">
+                            <div class="text-center py-4 text-gray-500 text-xs">در حال بارگذاری لیست میکروسرویس‌ها...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMN 2: Visual Builder (Col-span 8) -->
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    
+                    <!-- Services Block Area -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-purple-400">
+                        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                            <h3 class="text-lg font-medium text-white flex items-center gap-2">
+                                <i class="fas fa-cubes text-purple-400"></i> ساختار سرویس‌های پشته (Services)
+                            </h3>
+                            <button onclick="addServiceBlock()" class="text-xs bg-purple-500/20 text-purple-300 hover:bg-purple-400 hover:text-white px-3.5 py-2 rounded-lg border border-purple-500/30 transition flex items-center gap-1.5">
+                                <i class="fas fa-plus"></i> افزودن سرویس دستی
+                            </button>
+                        </div>
+                        
+                        <!-- Fixed Position for empty message so it does not get destroyed when services are cleared -->
+                        <div class="text-center py-8 text-gray-500 text-sm border border-dashed border-white/10 rounded-lg" id="no-services-msg">
+                            هیچ سرویسی اضافه نشده است. یکی دستی بسازید یا از میکروسرویس‌های کاتالوگ سمت راست استفاده کنید.
+                        </div>
+                        
+                        <div id="services-container" class="flex flex-col gap-4 max-h-[700px] overflow-y-auto custom-scroll pr-1 mt-4">
+                        </div>
+                    </div>
+
+                    <!-- Networks & Volumes Dual Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        <!-- Networks Panel -->
+                        <div class="glow-box rounded-xl p-5 border-t-2 border-t-green-500">
+                            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                                <h3 class="text-md font-medium text-white flex items-center gap-2">
+                                    <i class="fas fa-network-wired text-green-400"></i> شبکه‌های پروژه (Networks)
+                                </h3>
+                                <button onclick="addNetworkBlock()" class="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
+                                    <i class="fas fa-plus-circle"></i> افزودن شبکه
+                                </button>
+                            </div>
+                            <div id="networks-container" class="flex flex-col gap-4"></div>
+                        </div>
+
+                        <!-- Volumes Panel -->
+                        <div class="glow-box rounded-xl p-5 border-t-2 border-t-yellow-500">
+                            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                                <h3 class="text-md font-medium text-white flex items-center gap-2">
+                                    <i class="fas fa-hdd text-yellow-400"></i> والیوم‌ها (Volumes)
+                                </h3>
+                                <button onclick="addVolumeBlock()" class="text-xs text-yellow-400 hover:text-yellow-300 transition-colors flex items-center gap-1">
+                                    <i class="fas fa-plus-circle"></i> افزودن والیوم
+                                </button>
+                            </div>
+                            <div id="volumes-container" class="flex flex-col gap-4"></div>
+                        </div>
+                    </div>
+
+                    <!-- LIVE YAML CODE PREVIEW -->
+                    <div class="glow-box rounded-xl p-5 border-t-2 border-t-blue-500 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-3 border-b border-white/10 pb-2">
+                            <h3 class="text-sm font-medium text-blue-400 flex items-center gap-2">
+                                <i class="fas fa-code text-xs"></i> پیش‌نمایش آنی کدهای YAML تولید شده
+                            </h3>
+                            <button onclick="copyYamlToClipboard()" class="text-[10px] bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 px-2 py-1 rounded transition flex items-center gap-1">
+                                <i class="fas fa-copy"></i> کپی کردن کد
+                            </button>
+                        </div>
+                        <pre class="bg-black/40 p-4 rounded-lg font-mono text-xs text-cyan-400 max-h-[350px] overflow-auto custom-scroll border border-white/5" dir="ltr" id="yaml-live-preview"># No services configured yet.</pre>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- UI Toast Notifications Layout -->
+    <div id="toast-container"></div>
+
+    <!-- UI Custom Cyber Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glow-box w-full max-w-md p-6 rounded-xl border border-red-500/30 shadow-[0_0_50px_rgba(239,68,68,0.15)] flex flex-col gap-4">
+            <div class="flex items-center gap-3 border-b border-white/10 pb-3">
+                <div class="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-lg">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="text-lg font-title text-white">تأیید حذف عملیات</h3>
+            </div>
+            <p id="confirm-modal-msg" class="text-sm text-gray-300 leading-relaxed"></p>
+            <div class="flex justify-end gap-3 mt-2">
+                <button id="confirm-btn-cancel" class="px-4 py-2 text-xs text-gray-400 hover:bg-white/5 rounded border border-transparent hover:border-white/10 transition">انصراف</button>
+                <button id="confirm-btn-action" class="px-4 py-2 text-xs bg-red-600 hover:bg-red-500 text-white font-bold rounded transition shadow-md">حذف نهایی</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SERVICE BLOCK HTML TEMPLATE -->
+    <template id="tpl-service">
+        <div class="service-block bg-white/5 border border-white/10 hover:border-white/20 transition-all rounded-lg p-4 relative group flex flex-col gap-3">
+            
+            <button onclick="this.closest('.service-block').remove(); checkEmptyServices(); handleInputChanged();" class="absolute top-3 left-3 text-gray-500 hover:text-red-400 transition z-10" title="حذف سرویس">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">شناسه سرویس (Key) <span class="text-red-400">*</span></label>
+                    <input type="text" data-field="name" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="web_app, mysql_db" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">تصویر داکر (Image) <span class="text-red-400">*</span></label>
+                    <input type="text" data-field="image" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="nginx:stable-alpine" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">نام کانتینر (Container Name)</label>
+                    <input type="text" data-field="container_name" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="crazy-web-server">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">سیاست ری‌استارت (Restart Policy)</label>
+                    <select data-field="restart" onchange="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono">
+                        <option value="">(پیش‌فرض سیستم)</option>
+                        <option value="always">always</option>
+                        <option value="unless-stopped">unless-stopped</option>
+                        <option value="on-failure">on-failure</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">کاربر سیستم (User)</label>
+                    <input type="text" data-field="user" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="root یا 1000:1000">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">دستور نهایی کانتینر (Command)</label>
+                    <input type="text" data-field="command" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="npm start">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] text-gray-400 mb-1">نقطه ورود (Entrypoint)</label>
+                    <input type="text" data-field="entrypoint" oninput="handleInputChanged()" class="w-full p-2 rounded glow-input text-xs font-mono" placeholder="sh -c">
+                </div>
+            </div>
+
+            <!-- Tabs/Accordions for Advanced Lists -->
+            <div class="border-t border-white/5 pt-3 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                
+                <!-- Ports Management -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-plug text-[10px] text-persian-cyan"></i> پورت‌ها (Ports)
+                        </span>
+                        <button type="button" onclick="addPort(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="ports-list flex flex-col gap-1"></div>
+                </div>
+                
+                <!-- Environment Variables Management -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-envira text-[10px] text-green-400"></i> متغیرها (Environments)
+                        </span>
+                        <button type="button" onclick="addEnv(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="envs-list flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Service Volumes (Local Paths) -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-folder-open text-[10px] text-yellow-500"></i> والیوم‌های سرویس (Volumes)
+                        </span>
+                        <button type="button" onclick="addServiceVolume(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="service-volumes-list flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Service Depends On -->
+                <div class="bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-network-wired text-[10px] text-blue-400"></i> وابسته به سرویس (Depends On)
+                        </span>
+                        <button type="button" onclick="addServiceDepend(this)" class="text-[10px] text-persian-cyan hover:underline">افزودن +</button>
+                    </div>
+                    <div class="service-depends-list flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Service Networks (IP + Aliases) -->
+                <div class="lg:col-span-2 bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-1">
+                        <span class="text-xs text-gray-300 flex items-center gap-1">
+                            <i class="fas fa-ethernet text-[10px] text-cyan-400"></i> شبکه‌های کانتینر (Networks Mapping)
+                        </span>
+                        <button type="button" onclick="addServiceNetwork(this)" class="text-[10px] text-persian-cyan hover:underline">اتصال به شبکه جدید +</button>
+                    </div>
+                    <div class="service-networks-list grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                </div>
+
+                <!-- Unmapped Properties Fallback (logging, healthcheck, build, labels) -->
+                <div class="lg:col-span-2 bg-red-500/5 p-2.5 rounded-lg border border-red-500/10">
+                    <label class="block text-xs text-red-400 font-mono mb-1 flex items-center gap-1.5">
+                        <i class="fas fa-exclamation-triangle"></i> تنظیمات پیشرفته یا ناشناخته کانتینر (YAML Raw)
+                    </label>
+                    <p class="text-[10px] text-gray-500 mb-1.5">هر گونه فیلد پیشرفته مانند logging، healthcheck، labels یا build را با فرمت معتبر YAML در کادر زیر قرار دهید.</p>
+                    <textarea data-field="extra_config" oninput="handleInputChanged()" rows="4" class="w-full p-2 rounded glow-input text-xs font-mono custom-scroll" placeholder="logging:&#10;  driver: json-file&#10;  options:&#10;    max-size: 10m"></textarea>
+                </div>
+
+            </div>
+        </div>
+    </template>
+
+    <!-- SERVICE VOLUME ROW SUB-TEMPLATE -->
+    <template id="tpl-service-volume">
+        <div class="flex gap-1 items-center volume-row">
+            <input type="text" oninput="handleInputChanged()" class="w-full p-1.5 rounded glow-input text-[11px] font-mono" placeholder="./html:/usr/share/nginx/html یا db_data:/var/lib/mysql">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- SERVICE NETWORK MAPPING ROW SUB-TEMPLATE -->
+    <template id="tpl-service-network">
+        <div class="flex flex-col gap-1.5 p-2 bg-white/5 rounded border border-white/5 service-network-row relative group">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="absolute top-1 left-1 text-gray-500 hover:text-red-400 text-xs transition" title="حذف اتصال به شبکه"><i class="fas fa-times"></i></button>
+            <div class="grid grid-cols-3 gap-1.5 pt-2">
+                <div>
+                    <label class="block text-[8px] text-gray-400 mb-0.5">نام شبکه</label>
+                    <input type="text" data-field="net-name" oninput="handleInputChanged()" class="w-full p-1 rounded glow-input text-[10px] font-mono" placeholder="frontend_net">
+                </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 mb-0.5">آی‌پی کانتینر</label>
+                    <input type="text" data-field="net-ip" oninput="handleInputChanged()" class="w-full p-1 rounded glow-input text-[10px] font-mono" placeholder="172.20.0.5">
+                </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 mb-0.5">Aliases (کاما)</label>
+                    <input type="text" data-field="net-aliases" oninput="handleInputChanged()" class="w-full p-1 rounded glow-input text-[10px] font-mono" placeholder="web-proxy">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- SERVICE DEPENDS ON SUB-TEMPLATE -->
+    <template id="tpl-service-depend">
+        <div class="flex gap-1 items-center depend-row">
+            <input type="text" oninput="handleInputChanged()" class="w-full p-1.5 rounded glow-input text-[11px] font-mono" placeholder="mysql_db">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- PORT ROW SUB-TEMPLATE -->
+    <template id="tpl-port">
+        <div class="flex gap-1 items-center port-row">
+            <input type="text" oninput="handleInputChanged()" class="w-full p-1.5 rounded glow-input text-[11px] font-mono" placeholder="8080:80">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- ENVIRONMENT ROW SUB-TEMPLATE -->
+    <template id="tpl-env">
+        <div class="flex gap-1 items-center env-row">
+            <input type="text" oninput="handleInputChanged()" class="w-1/2 p-1.5 rounded glow-input text-[11px] font-mono" placeholder="MYSQL_DATABASE">
+            <span class="text-gray-500">=</span>
+            <input type="text" oninput="handleInputChanged()" class="w-1/2 p-1.5 rounded glow-input text-[11px] font-mono" placeholder="crazydev_db">
+            <button onclick="this.parentElement.remove(); handleInputChanged();" class="text-gray-500 hover:text-red-400 px-1"><i class="fas fa-times"></i></button>
+        </div>
+    </template>
+
+    <!-- GLOBAL NETWORK ROW HTML TEMPLATE -->
+    <template id="tpl-network">
+        <div class="network-block flex flex-col gap-2 p-3 bg-white/5 rounded-lg border border-white/5">
+            <div class="flex gap-2 items-center">
+                <input type="text" data-field="name" oninput="handleInputChanged()" class="flex-grow p-1.5 rounded glow-input text-xs font-mono" placeholder="backend_net">
+                <select data-field="driver" onchange="handleInputChanged()" class="w-24 p-1.5 rounded glow-input text-xs font-mono">
+                    <option value="bridge">bridge</option>
+                    <option value="overlay">overlay</option>
+                    <option value="host">host</option>
+                </select>
+                <button onclick="this.closest('.network-block').remove(); handleInputChanged();" class="text-red-400 hover:text-red-300 p-1"><i class="fas fa-times"></i></button>
+            </div>
+            <div>
+                <label class="block text-[8px] text-gray-500 mb-0.5">تنظیمات پیشرفته شبکه (YAML Raw)</label>
+                <textarea data-field="extra" oninput="handleInputChanged()" rows="2" class="w-full p-1.5 rounded glow-input text-[10px] font-mono custom-scroll" placeholder="ipam:&#10;  config:&#10;    - subnet: 172.20.0.0/24"></textarea>
+            </div>
+        </div>
+    </template>
+
+    <!-- GLOBAL VOLUME ROW HTML TEMPLATE -->
+    <template id="tpl-volume">
+        <div class="volume-block flex flex-col gap-2 p-3 bg-white/5 rounded-lg border border-white/5">
+            <div class="flex gap-2 items-center">
+                <input type="text" data-field="name" oninput="handleInputChanged()" class="flex-grow p-1.5 rounded glow-input text-xs font-mono" placeholder="db_store_volume">
+                <button onclick="this.closest('.volume-block').remove(); handleInputChanged();" class="text-red-400 hover:text-red-300 p-1"><i class="fas fa-times"></i></button>
+            </div>
+            <div>
+                <label class="block text-[8px] text-gray-500 mb-0.5">تنظیمات پیشرفته والیوم (YAML Raw)</label>
+                <textarea data-field="extra" oninput="handleInputChanged()" rows="2" class="w-full p-1.5 rounded glow-input text-[10px] font-mono custom-scroll" placeholder="external: true"></textarea>
+            </div>
+        </div>
+    </template>
+
+    <!-- JS SCRIPTING ENGINE -->
+    <script>
+        let currentOffset = 0;
+        const limit = 10;
+        let totalRows = 0;
+        let cachedComposes = {}; 
+        let cachedMicroservices = [];
+        let currentConfirmCallback = null;
+
+        // --- Custom Toast Notifications system ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = '<i class="fas fa-check-circle text-xl"></i>';
+            if (type === 'error') {
+                icon = '<i class="fas fa-exclamation-triangle text-xl"></i>';
+            } else if (type === 'info') {
+                icon = '<i class="fas fa-info-circle text-xl"></i>';
+            }
+            
+            toast.innerHTML = `${icon} <span class="text-sm font-sans">${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // --- Custom Confirm Modal dialog ---
+        function showConfirm(msg, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            if (!modal) return;
+            document.getElementById('confirm-modal-msg').innerText = msg;
+            modal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 50);
+
+            currentConfirmCallback = onConfirm;
+        }
+
+        function hideConfirm() {
+            const modal = document.getElementById('confirm-modal');
+            if (!modal) return;
+            modal.classList.remove('opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentConfirmCallback = null;
+            }, 300);
+        }
+
+        const cancelBtn = document.getElementById('confirm-btn-cancel');
+        if (cancelBtn) cancelBtn.addEventListener('click', hideConfirm);
+        
+        const actionBtn = document.getElementById('confirm-btn-action');
+        if (actionBtn) {
+            actionBtn.addEventListener('click', () => {
+                if (currentConfirmCallback) {
+                    currentConfirmCallback();
+                }
+                hideConfirm();
+            });
+        }
+
+        // --- STREAMING_CHUNK:Fetching organization Microservices... ---
+        // --- Microservices Integration System ---
+        async function fetchMicroservices() {
+            try {
+                const response = await fetch('/microservice/');
+                if (!response.ok) throw new Error('Could not fetch microservices list');
+                
+                const resData = await response.json();
+                cachedMicroservices = resData.data || [];
+                
+                const totalMsEl = document.getElementById('stat-total-microservices');
+                if (totalMsEl) totalMsEl.innerText = cachedMicroservices.length;
+                
+                const countEl = document.getElementById('microservice-count');
+                if (countEl) countEl.innerText = cachedMicroservices.length;
+                
+                renderMicroserviceList();
+            } catch (err) {
+                console.error(err);
+                const container = document.getElementById('microservice-list-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-4 text-red-400 text-xs">
+                            <i class="fas fa-exclamation-circle mb-1"></i> خطا در اتصال به کاتالوگ میکروسرویس‌ها
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // --- STREAMING_CHUNK:Rendering Microservices inside Sidebar... ---
+        function renderMicroserviceList() {
+            const container = document.getElementById('microservice-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (cachedMicroservices.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-gray-500 text-xs">هیچ میکروسرویسی تعریف نشده است</div>';
+                return;
+            }
+
+            cachedMicroservices.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "p-3 rounded-lg bg-dark-surface/40 border border-white/5 hover:border-purple-500/30 transition-all flex justify-between items-center group/card ms-item";
+                card.setAttribute('data-name', item.name.toLowerCase());
+                card.innerHTML = `
+                    <div class="flex flex-col gap-1 text-right">
+                        <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                            ${item.name}
+                        </div>
+                        <div class="text-[10px] text-gray-400 font-mono" dir="ltr">${item.image || '(No image)'}</div>
+                    </div>
+                    <button onclick="injectMicroservice(${item.id})" class="text-[10px] bg-purple-500/10 text-purple-300 hover:bg-purple-500 hover:text-white px-2 py-1 rounded border border-purple-500/20 transition flex items-center gap-1">
+                        <i class="fas fa-file-import"></i> درج سریع
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterMicroservices() {
+            const query = document.getElementById('search-microservice').value.toLowerCase().trim();
+            document.querySelectorAll('.ms-item').forEach(el => {
+                const name = el.getAttribute('data-name');
+                if (name.includes(query)) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- STREAMING_CHUNK:Injecting selected microservice... ---
+        function injectMicroservice(id) {
+            const ms = cachedMicroservices.find(item => item.id === id);
+            if (!ms) {
+                showToast('میکروسرویس یافت نشد', 'error');
+                return;
+            }
+
+            const block = addServiceBlock();
+            if (!block) return;
+            
+            const nameField = block.querySelector('[data-field="name"]');
+            if (nameField) nameField.value = ms.name.replace(/[^a-zA-Z0-9_-]/g, '_');
+            
+            const imgField = block.querySelector('[data-field="image"]');
+            if (imgField) imgField.value = (ms.image || '').trim();
+            
+            const restartField = block.querySelector('[data-field="restart"]');
+            if (restartField) restartField.value = ms.restart || 'always';
+
+            if (ms.environment && ms.environment.trim()) {
+                const listContainer = block.querySelector('.envs-list');
+                if (listContainer) {
+                    const rawEnvs = ms.environment.split(',');
+                    rawEnvs.forEach(pair => {
+                        const parts = pair.split('=');
+                        const key = parts[0]?.trim();
+                        const val = parts[1]?.trim() || '';
+                        if (key) {
+                            const envTpl = document.getElementById('tpl-env').content.cloneNode(true);
+                            const inputs = envTpl.querySelectorAll('input');
+                            if (inputs.length >= 2) {
+                                inputs[0].value = key;
+                                inputs[1].value = val;
+                                listContainer.appendChild(envTpl);
+                            }
+                        }
+                    });
+                }
+            }
+
+            showToast(`میکروسرویس "${ms.name}" با موفقیت درج شد`, 'success');
+            handleInputChanged();
+        }
+
+        // --- STREAMING_CHUNK:Collecting Visual Form Data to JSON... ---
+        function collectFormData(silentMode = false) {
+            const projectNameEl = document.getElementById('inp-project-name');
+            const projectName = projectNameEl ? projectNameEl.value.trim() : '';
+            if (!projectName) {
+                if (!silentMode) showToast('نام پروژه الزامی است', 'error');
+                return null;
+            }
+
+            const rawIpsEl = document.getElementById('inp-ips');
+            const rawIps = rawIpsEl ? rawIpsEl.value : '';
+            const ipsArray = rawIps.split(',')
+                                   .map(ip => ip.trim())
+                                   .filter(ip => ip !== '');
+
+            const versionEl = document.getElementById('inp-version');
+            const payload = {
+                project_name: projectName,
+                ips: ipsArray,
+                compose: {
+                    version: versionEl ? versionEl.value.trim() : '3.8',
+                    services: [],
+                    networks: [],
+                    volumes: []
+                }
+            };
+
+            let hasValidService = false;
+            let blocks = document.querySelectorAll('.service-block');
+            
+            for (let block of blocks) {
+                const sNameInp = block.querySelector('[data-field="name"]');
+                const sName = sNameInp ? sNameInp.value.trim() : '';
+                
+                const imageInp = block.querySelector('[data-field="image"]');
+                const image = imageInp ? imageInp.value.trim() : '';
+
+                if (!sName || !image) {
+                    if (!silentMode && !sName) showToast('یکی از سرویس‌ها فاقد شناسه است', 'error');
+                    if (!silentMode && !image) showToast('تصویر داکر الزامی است', 'error');
+                    return null;
+                }
+                
+                hasValidService = true;
+
+                const cNameInp = block.querySelector('[data-field="container_name"]');
+                const restartInp = block.querySelector('[data-field="restart"]');
+                const userInp = block.querySelector('[data-field="user"]');
+
+                let serviceObj = {
+                    name: sName,
+                    image: image,
+                    container_name: cNameInp ? cNameInp.value.trim() : '',
+                    restart: restartInp ? restartInp.value : '',
+                    user: userInp ? userInp.value.trim() : ''
+                };
+
+                // Command and Entrypoint parser
+                const cmdInp = block.querySelector('[data-field="command"]');
+                const cmdVal = cmdInp ? cmdInp.value.trim() : '';
+                if (cmdVal) serviceObj.command = cmdVal.split(/\s+/);
+                
+                const entryInp = block.querySelector('[data-field="entrypoint"]');
+                const entrypointVal = entryInp ? entryInp.value.trim() : '';
+                if (entrypointVal) serviceObj.entrypoint = entrypointVal.split(/\s+/);
+
+                // Collect Ports array
+                const ports = [];
+                block.querySelectorAll('.ports-list input').forEach(inp => {
+                    if (inp.value.trim()) ports.push(inp.value.trim());
+                });
+                if (ports.length > 0) serviceObj.ports = ports;
+
+                // Collect Environments map
+                const envs = {};
+                let hasEnv = false;
+                block.querySelectorAll('.envs-list > div').forEach(envRow => {
+                    const inputs = envRow.querySelectorAll('input');
+                    if (inputs.length >= 2) {
+                        const k = inputs[0].value.trim();
+                        const v = inputs[1].value.trim();
+                        if (k) {
+                            envs[k] = v;
+                            hasEnv = true;
+                        }
+                    }
+                });
+                if (hasEnv) serviceObj.environment = envs;
+
+                // Collect Service-level Volumes array
+                const volumes = [];
+                block.querySelectorAll('.service-volumes-list input').forEach(inp => {
+                    if (inp.value.trim()) volumes.push(inp.value.trim());
+                });
+                if (volumes.length > 0) serviceObj.volumes = volumes;
+
+                // Collect Service Networks
+                const serviceNets = [];
+                block.querySelectorAll('.service-networks-list .service-network-row').forEach(netRow => {
+                    const netNameInp = netRow.querySelector('[data-field="net-name"]');
+                    const netName = netNameInp ? netNameInp.value.trim() : '';
+                    if (netName) {
+                        const netMapObj = { name: netName };
+                        const netIpInp = netRow.querySelector('[data-field="net-ip"]');
+                        const netIp = netIpInp ? netIpInp.value.trim() : '';
+                        if (netIp) netMapObj.ipv4_address = netIp;
+                        
+                        const netAliasesInp = netRow.querySelector('[data-field="net-aliases"]');
+                        const netAliases = netAliasesInp ? netAliasesInp.value.trim() : '';
+                        if (netAliases) {
+                            netMapObj.aliases = netAliases.split(',').map(a => a.trim()).filter(Boolean);
+                        }
+                        serviceNets.push(netMapObj);
+                    }
+                });
+                if (serviceNets.length > 0) serviceObj.networks = serviceNets;
+
+                // Collect Service Dependencies
+                const depends = [];
+                block.querySelectorAll('.service-depends-list input').forEach(inp => {
+                    if (inp.value.trim()) depends.push(inp.value.trim());
+                });
+                if (depends.length > 0) serviceObj.depends_on = depends;
+
+                // Merge RAW Custom Configuration JSON (from custom YAML config box)
+                const extraYamlEl = block.querySelector('[data-field="extra_config"]');
+                const extraYamlStr = extraYamlEl ? extraYamlEl.value.trim() : '';
+                if (extraYamlStr) {
+                    try {
+                        const extraParsed = jsyaml.load(extraYamlStr);
+                        if (extraParsed && typeof extraParsed === 'object') {
+                            Object.assign(serviceObj, extraParsed);
+                        }
+                    } catch (e) {
+                        if (!silentMode) showToast(`خطا در فرمت کدهای YAML کانتینر ${sName}`, 'error');
+                        console.error('YAML error inside service block:', e);
+                    }
+                }
+
+                // Clean empty keys
+                Object.keys(serviceObj).forEach(k => serviceObj[k] === '' && delete serviceObj[k]);
+
+                payload.compose.services.push(serviceObj);
+            }
+
+            if (!hasValidService) {
+                if (!silentMode) showToast('حداقل یک سرویس با ساختار معتبر باید وجود داشته باشد', 'error');
+                return null;
+            }
+
+            // Collect Global Networks with optional advanced configuration inside YAML textareas
+            document.querySelectorAll('.network-block').forEach(block => {
+                const nNameInp = block.querySelector('[data-field="name"]');
+                const nName = nNameInp ? nNameInp.value.trim() : '';
+                if (nName) {
+                    const driverSel = block.querySelector('[data-field="driver"]');
+                    const netObj = {
+                        name: nName,
+                        driver: driverSel ? driverSel.value : 'bridge'
+                    };
+                    const extraNetEl = block.querySelector('[data-field="extra"]');
+                    const extraNetYaml = extraNetEl ? extraNetEl.value.trim() : '';
+                    if (extraNetYaml) {
+                        try {
+                            const extraNetParsed = jsyaml.load(extraNetYaml);
+                            if (extraNetParsed && typeof extraNetParsed === 'object') {
+                                Object.assign(netObj, extraNetParsed);
+                            }
+                        } catch(e){}
+                    }
+                    payload.compose.networks.push(netObj);
+                }
+            });
+
+            // Collect Global Volumes with optional advanced config
+            document.querySelectorAll('.volume-block').forEach(block => {
+                const vNameInp = block.querySelector('[data-field="name"]');
+                const vName = vNameInp ? vNameInp.value.trim() : '';
+                if (vName) {
+                    const volObj = { name: vName };
+                    const extraVolEl = block.querySelector('[data-field="extra"]');
+                    const extraVolYaml = extraVolEl ? extraVolEl.value.trim() : '';
+                    if (extraVolYaml) {
+                        try {
+                            const extraVolParsed = jsyaml.load(extraVolYaml);
+                            if (extraVolParsed && typeof extraVolParsed === 'object') {
+                                Object.assign(volObj, extraVolParsed);
+                            }
+                        } catch(e){}
+                    }
+                    payload.compose.volumes.push(volObj);
+                }
+            });
+
+            return payload;
+        }
+
+        // --- STREAMING_CHUNK:Live YAML Code Generation & Rendering... ---
+        // --- Live Preview Rendering ---
+        function handleInputChanged() {
+            const payload = collectFormData(true);
+            const container = document.getElementById('yaml-live-preview');
+            if (!container) return;
+            
+            if (!payload || !payload.compose || payload.compose.services.length === 0) {
+                container.innerText = "# هیچ سرویس پشته‌ای برای شبیه‌سازی پیکربندی وجود ندارد.";
+                return;
+            }
+
+            try {
+                const spec = {
+                    version: payload.compose.version || "3.8",
+                    services: {}
+                };
+
+                payload.compose.services.forEach(srv => {
+                    const srvSpec = {};
+                    Object.keys(srv).forEach(key => {
+                        if (key !== 'name') {
+                            srvSpec[key] = srv[key];
+                        }
+                    });
+                    
+                    // Format networks to standard docker map format if they are structured as arrays
+                    if (srv.networks && Array.isArray(srv.networks)) {
+                        srvSpec.networks = {};
+                        srv.networks.forEach(net => {
+                            const mapVal = {};
+                            if (net.ipv4_address) mapVal.ipv4_address = net.ipv4_address;
+                            if (net.aliases) mapVal.aliases = net.aliases;
+                            srvSpec.networks[net.name] = Object.keys(mapVal).length > 0 ? mapVal : {};
+                        });
+                    }
+
+                    spec.services[srv.name] = srvSpec;
+                });
+
+                if (payload.compose.networks && payload.compose.networks.length > 0) {
+                    spec.networks = {};
+                    payload.compose.networks.forEach(net => {
+                        const netSpec = {};
+                        Object.keys(net).forEach(key => {
+                            if (key !== 'name') netSpec[key] = net[key];
+                        });
+                        spec.networks[net.name] = Object.keys(netSpec).length > 0 ? netSpec : {};
+                    });
+                }
+
+                if (payload.compose.volumes && payload.compose.volumes.length > 0) {
+                    spec.volumes = {};
+                    payload.compose.volumes.forEach(vol => {
+                        const volSpec = {};
+                        Object.keys(vol).forEach(key => {
+                            if (key !== 'name') volSpec[key] = vol[key];
+                        });
+                        spec.volumes[vol.name] = Object.keys(volSpec).length > 0 ? volSpec : {};
+                    });
+                }
+
+                const yamlStr = jsyaml.dump(spec, { indent: 2, lineWidth: -1 });
+                container.innerText = yamlStr;
+            } catch (err) {
+                container.innerText = `# خطای فرمت‌بندی YAML: ${err.message}`;
+            }
+        }
+
+        function copyYamlToClipboard() {
+            const pre = document.getElementById('yaml-live-preview');
+            if (!pre) return;
+            const textarea = document.createElement('textarea');
+            textarea.value = pre.innerText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) showToast('کد YAML با موفقیت در کلیپ‌بورد کپی شد', 'success');
+                else showToast('کپی کردن ناموفق بود', 'error');
+            } catch (err) {
+                showToast('مرورگر از کپی پشتیبانی نمی‌کند', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // --- STREAMING_CHUNK:Toggling Workspace Views... ---
+        // --- UI View Switching ---
+        function openEditor(editId = null) {
+            const listPanel = document.getElementById('view-list');
+            const editorPanel = document.getElementById('view-editor');
+            if (!listPanel || !editorPanel) return;
+
+            listPanel.classList.add('hidden', 'opacity-0');
+            editorPanel.classList.remove('hidden');
+            setTimeout(() => editorPanel.classList.remove('opacity-0'), 50);
+
+            resetForm();
+            
+            if (editId) {
+                const editorTitle = document.getElementById('editor-title');
+                if (editorTitle) editorTitle.innerText = 'ویرایش ارکستراسیون موجود';
+                
+                const editIdInp = document.getElementById('edit-id');
+                if (editIdInp) editIdInp.value = editId;
+                
+                populateFormForEdit(editId);
+            } else {
+                const editorTitle = document.getElementById('editor-title');
+                if (editorTitle) editorTitle.innerText = 'ایجاد ارکستراسیون جدید';
+                addServiceBlock(); 
+            }
+            handleInputChanged();
+        }
+
+        function closeEditor() {
+            const editorPanel = document.getElementById('view-editor');
+            if (editorPanel) editorPanel.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                if (editorPanel) editorPanel.classList.add('hidden');
+                const listView = document.getElementById('view-list');
+                if (listView) {
+                    listView.classList.remove('hidden');
+                    setTimeout(() => listView.classList.remove('opacity-0'), 50);
+                }
+            }, 300);
+            loadComposes(); 
+        }
+
+        // --- STREAMING_CHUNK:Managing Visual DOM Elements dynamically... ---
+        // --- Visual Form Element Management ---
+        function addServiceBlock() {
+            const templateEl = document.getElementById('tpl-service');
+            const container = document.getElementById('services-container');
+            if (!templateEl || !container) return null;
+
+            const tpl = templateEl.content.cloneNode(true);
+            container.appendChild(tpl);
+            
+            const blocks = container.querySelectorAll('.service-block');
+            const lastBlock = blocks[blocks.length - 1];
+            
+            checkEmptyServices();
+            handleInputChanged();
+            return lastBlock;
+        }
+
+        function checkEmptyServices() {
+            const container = document.getElementById('services-container');
+            const msg = document.getElementById('no-services-msg');
+            if (!container || !msg) return;
+
+            if (container.querySelectorAll('.service-block').length === 0) {
+                msg.style.display = 'block';
+            } else {
+                msg.style.display = 'none';
+            }
+        }
+
+        function addNetworkBlock() {
+            const templateEl = document.getElementById('tpl-network');
+            const container = document.getElementById('networks-container');
+            if (!templateEl || !container) return;
+
+            const tpl = templateEl.content.cloneNode(true);
+            container.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        function addVolumeBlock() {
+            const templateEl = document.getElementById('tpl-volume');
+            const container = document.getElementById('volumes-container');
+            if (!templateEl || !container) return;
+
+            const tpl = templateEl.content.cloneNode(true);
+            container.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        function addPort(btnElement) {
+            const templateEl = document.getElementById('tpl-port');
+            if (!templateEl) return;
+            const tpl = templateEl.content.cloneNode(true);
+            btnElement.closest('div').nextElementSibling.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        function addEnv(btnElement) {
+            const templateEl = document.getElementById('tpl-env');
+            if (!templateEl) return;
+            const tpl = templateEl.content.cloneNode(true);
+            btnElement.closest('div').nextElementSibling.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        function addServiceVolume(btnElement) {
+            const templateEl = document.getElementById('tpl-service-volume');
+            if (!templateEl) return;
+            const tpl = templateEl.content.cloneNode(true);
+            btnElement.closest('div').nextElementSibling.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        function addServiceDepend(btnElement) {
+            const templateEl = document.getElementById('tpl-service-depend');
+            if (!templateEl) return;
+            const tpl = templateEl.content.cloneNode(true);
+            btnElement.closest('div').nextElementSibling.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        function addServiceNetwork(btnElement) {
+            const templateEl = document.getElementById('tpl-service-network');
+            if (!templateEl) return;
+            const tpl = templateEl.content.cloneNode(true);
+            btnElement.closest('div').nextElementSibling.appendChild(tpl);
+            handleInputChanged();
+        }
+
+        // --- STREAMING_CHUNK:Resetting Workspace Form to Defaults... ---
+        function resetForm() {
+            const editIdInp = document.getElementById('edit-id');
+            if (editIdInp) editIdInp.value = '';
+            
+            const projNameInp = document.getElementById('inp-project-name');
+            if (projNameInp) projNameInp.value = '';
+            
+            const ipsInp = document.getElementById('inp-ips');
+            if (ipsInp) ipsInp.value = '';
+            
+            const versionInp = document.getElementById('inp-version');
+            if (versionInp) versionInp.value = '3.8';
+            
+            const servicesContainer = document.getElementById('services-container');
+            if (servicesContainer) servicesContainer.innerHTML = '';
+            
+            checkEmptyServices();
+            
+            const netsContainer = document.getElementById('networks-container');
+            if (netsContainer) netsContainer.innerHTML = '';
+            
+            const volsContainer = document.getElementById('volumes-container');
+            if (volsContainer) volsContainer.innerHTML = '';
+        }
+
+        // --- STREAMING_CHUNK:Parsing Complex YAML back to Visual Elements... ---
+        // --- Full Robust Rebuilder / Reverse-parser from YAML content to Visual UI ---
+        function populateFormForEdit(id) {
+            const item = cachedComposes[id];
+            if (!item) {
+                showToast('پروژه مورد نظر در کش مرورگر یافت نشد', 'error');
+                return;
+            }
+
+            const pName = item.ProjectName || item.project_name || '';
+            const yContent = item.YAMLContent || item.yaml_content || '';
+            const ips = item.IPs || item.ips || [];
+
+            const projNameInp = document.getElementById('inp-project-name');
+            if (projNameInp) projNameInp.value = pName;
+            
+            if (ips && ips.length > 0) {
+                const ipsInp = document.getElementById('inp-ips');
+                if (ipsInp) {
+                    ipsInp.value = ips.map(ip => ip.ip_address || ip.IPAddress || '').filter(Boolean).join(', ');
+                }
+            }
+
+            if (!yContent) {
+                addServiceBlock();
+                return;
+            }
+
+            // Verify JS-YAML library is loaded successfully (CDN filtering guard)
+            if (typeof jsyaml === 'undefined') {
+                console.error('JS-YAML library is not loaded!');
+                showToast('خطا: کتابخانه پردازشگر YAML لود نشده است. احتمالاً به دلیل فیلترینگ اینترنت یا عدم دسترسی به CDN.', 'error');
+                addServiceBlock();
+                return;
+            }
+
+            try {
+                const doc = jsyaml.load(yContent);
+                if (!doc) {
+                    addServiceBlock();
+                    return;
+                }
+
+                const servicesContainer = document.getElementById('services-container');
+                if (servicesContainer) servicesContainer.innerHTML = '';
+
+                // Populate Version
+                const versionInput = document.getElementById('inp-version');
+                if (versionInput) versionInput.value = doc.version || '3.8';
+
+                // Populate Services
+                if (doc.services) {
+                    Object.keys(doc.services).forEach(srvKey => {
+                        const srvVal = doc.services[srvKey] || {};
+                        const block = addServiceBlock();
+                        if (!block) return;
+                        
+                        const nameInp = block.querySelector('[data-field="name"]');
+                        if (nameInp) nameInp.value = srvKey;
+
+                        const imgInp = block.querySelector('[data-field="image"]');
+                        if (imgInp) imgInp.value = srvVal.image || '';
+
+                        const containerInp = block.querySelector('[data-field="container_name"]');
+                        if (containerInp) containerInp.value = srvVal.container_name || '';
+
+                        const restartInp = block.querySelector('[data-field="restart"]');
+                        if (restartInp) restartInp.value = srvVal.restart || '';
+
+                        const userInp = block.querySelector('[data-field="user"]');
+                        if (userInp) userInp.value = srvVal.user || '';
+
+                        // Rebuild command & entrypoint safely
+                        if (srvVal.command) {
+                            const cmdInp = block.querySelector('[data-field="command"]');
+                            if (cmdInp) {
+                                cmdInp.value = Array.isArray(srvVal.command) ? srvVal.command.join(' ') : srvVal.command.toString();
+                            }
+                        }
+                        if (srvVal.entrypoint) {
+                            const entryInp = block.querySelector('[data-field="entrypoint"]');
+                            if (entryInp) {
+                                entryInp.value = Array.isArray(srvVal.entrypoint) ? srvVal.entrypoint.join(' ') : srvVal.entrypoint.toString();
+                            }
+                        }
+
+                        // Rebuild Ports
+                        if (srvVal.ports && Array.isArray(srvVal.ports)) {
+                            const portsList = block.querySelector('.ports-list');
+                            if (portsList) {
+                                srvVal.ports.forEach(portStr => {
+                                    const portTpl = document.getElementById('tpl-port').content.cloneNode(true);
+                                    const portInp = portTpl.querySelector('input');
+                                    if (portInp) portInp.value = portStr.toString();
+                                    portsList.appendChild(portTpl);
+                                });
+                            }
+                        }
+
+                        // Rebuild Environments (supports Map and Array strings)
+                        if (srvVal.environment) {
+                            const envsList = block.querySelector('.envs-list');
+                            if (envsList) {
+                                if (Array.isArray(srvVal.environment)) {
+                                    srvVal.environment.forEach(envStr => {
+                                        if (typeof envStr === 'string') {
+                                            const parts = envStr.split('=');
+                                            const envTpl = document.getElementById('tpl-env').content.cloneNode(true);
+                                            const inputs = envTpl.querySelectorAll('input');
+                                            if (inputs.length >= 2) {
+                                                inputs[0].value = parts[0]?.trim() || '';
+                                                inputs[1].value = parts[1]?.trim() || '';
+                                                envsList.appendChild(envTpl);
+                                            }
+                                        }
+                                    });
+                                } else if (typeof srvVal.environment === 'object' && srvVal.environment !== null) {
+                                    Object.keys(srvVal.environment).forEach(key => {
+                                        const envTpl = document.getElementById('tpl-env').content.cloneNode(true);
+                                        const inputs = envTpl.querySelectorAll('input');
+                                        if (inputs.length >= 2) {
+                                            inputs[0].value = key;
+                                            inputs[1].value = srvVal.environment[key] !== null ? srvVal.environment[key].toString() : '';
+                                            envsList.appendChild(envTpl);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+                        // Rebuild Service Volumes
+                        if (srvVal.volumes && Array.isArray(srvVal.volumes)) {
+                            const srvVolsList = block.querySelector('.service-volumes-list');
+                            if (srvVolsList) {
+                                srvVal.volumes.forEach(volStr => {
+                                    const volTpl = document.getElementById('tpl-service-volume').content.cloneNode(true);
+                                    const volInp = volTpl.querySelector('input');
+                                    if (volInp) volInp.value = volStr.toString();
+                                    srvVolsList.appendChild(volTpl);
+                                });
+                            }
+                        }
+
+                        // Rebuild Service Networks mapping (Super Robust normalizer)
+                        let normalizedNets = [];
+                        if (srvVal.networks) {
+                            if (Array.isArray(srvVal.networks)) {
+                                srvVal.networks.forEach(netItem => {
+                                    if (typeof netItem === 'string') {
+                                        normalizedNets.push({ name: netItem });
+                                    } else if (typeof netItem === 'object' && netItem !== null) {
+                                        const keys = Object.keys(netItem);
+                                        if (keys.length > 0) {
+                                            const netName = keys[0];
+                                            const netDetails = netItem[netName] || {};
+                                            normalizedNets.push({
+                                                name: netName,
+                                                ipv4_address: netDetails.ipv4_address || netDetails.ipv4 || '',
+                                                aliases: Array.isArray(netDetails.aliases) ? netDetails.aliases : []
+                                            });
+                                        }
+                                    }
+                                });
+                            } else if (typeof srvVal.networks === 'object' && srvVal.networks !== null) {
+                                Object.keys(srvVal.networks).forEach(netName => {
+                                    const netDetails = srvVal.networks[netName] || {};
+                                    normalizedNets.push({
+                                        name: netName,
+                                        ipv4_address: netDetails.ipv4_address || netDetails.ipv4 || '',
+                                        aliases: Array.isArray(netDetails.aliases) ? netDetails.aliases : []
+                                    });
+                                });
+                            }
+                        }
+                        if (normalizedNets.length > 0) {
+                            const netsList = block.querySelector('.service-networks-list');
+                            if (netsList) {
+                                normalizedNets.forEach(netObj => {
+                                    const netTpl = document.getElementById('tpl-service-network').content.cloneNode(true);
+                                    const nameInp = netTpl.querySelector('[data-field="net-name"]');
+                                    const ipInp = netTpl.querySelector('[data-field="net-ip"]');
+                                    const aliasInp = netTpl.querySelector('[data-field="net-aliases"]');
+                                    if (nameInp) nameInp.value = netObj.name || '';
+                                    if (ipInp) ipInp.value = netObj.ipv4_address || '';
+                                    if (aliasInp) aliasInp.value = Array.isArray(netObj.aliases) ? netObj.aliases.join(', ') : '';
+                                    netsList.appendChild(netTpl);
+                                });
+                            }
+                        }
+
+                        // Rebuild Dependencies
+                        if (srvVal.depends_on && Array.isArray(srvVal.depends_on)) {
+                            const dependsList = block.querySelector('.service-depends-list');
+                            if (dependsList) {
+                                srvVal.depends_on.forEach(depStr => {
+                                    const depTpl = document.getElementById('tpl-service-depend').content.cloneNode(true);
+                                    const depInp = depTpl.querySelector('input');
+                                    if (depInp) depInp.value = depStr.toString();
+                                    dependsList.appendChild(depTpl);
+                                });
+                            }
+                        }
+
+                        // Parse Unrecognized items to RAW YAML configurations
+                        const standardMappedKeys = [
+                            'image', 'container_name', 'restart', 'user', 'ports', 'environment',
+                            'volumes', 'networks', 'depends_on', 'command', 'entrypoint'
+                        ];
+                        const extraObj = {};
+                        Object.keys(srvVal).forEach(key => {
+                            if (!standardMappedKeys.includes(key)) {
+                                extraObj[key] = srvVal[key];
+                            }
+                        });
+                        if (Object.keys(extraObj).length > 0) {
+                            try {
+                                const extraConfigInp = block.querySelector('[data-field="extra_config"]');
+                                if (extraConfigInp) {
+                                    extraConfigInp.value = jsyaml.dump(extraObj, { indent: 2 });
+                                }
+                            } catch (e) {
+                                console.error('Extra yaml config builder error:', e);
+                            }
+                        }
+                    });
+                } else {
+                    addServiceBlock();
+                }
+
+                // Rebuild Global Networks
+                if (doc.networks) {
+                    const netContainer = document.getElementById('networks-container');
+                    if (netContainer) {
+                        Object.keys(doc.networks).forEach(netName => {
+                            const netVal = doc.networks[netName] || {};
+                            const netTpl = document.getElementById('tpl-network').content.cloneNode(true);
+                            
+                            const nameInp = netTpl.querySelector('[data-field="name"]');
+                            const driverInp = netTpl.querySelector('[data-field="driver"]');
+                            if (nameInp) nameInp.value = netName;
+                            if (driverInp) driverInp.value = netVal.driver || 'bridge';
+                            
+                            // Remaining keys
+                            const netExtra = {};
+                            Object.keys(netVal).forEach(k => {
+                                if (k !== 'driver') netExtra[k] = netVal[k];
+                            });
+                            if (Object.keys(netExtra).length > 0) {
+                                try {
+                                    const extraInp = netTpl.querySelector('[data-field="extra"]');
+                                    if (extraInp) extraInp.value = jsyaml.dump(netExtra, { indent: 2 });
+                                } catch(e){}
+                            }
+                            
+                            netContainer.appendChild(netTpl);
+                        });
+                    }
+                }
+
+                // Rebuild Global Volumes
+                if (doc.volumes) {
+                    const volContainer = document.getElementById('volumes-container');
+                    if (volContainer) {
+                        Object.keys(doc.volumes).forEach(volName => {
+                            const volTpl = document.getElementById('tpl-volume').content.cloneNode(true);
+                            const nameInp = volTpl.querySelector('[data-field="name"]');
+                            if (nameInp) nameInp.value = volName;
+
+                            const volVal = doc.volumes[volName] || {};
+                            if (volVal && Object.keys(volVal).length > 0) {
+                                try {
+                                    const extraInp = volTpl.querySelector('[data-field="extra"]');
+                                    if (extraInp) extraInp.value = jsyaml.dump(volVal, { indent: 2 });
+                                } catch(e){}
+                            }
+                            volContainer.appendChild(volTpl);
+                        });
+                    }
+                }
+
+                checkEmptyServices();
+                handleInputChanged();
+                showToast('پیکربندی داکر کامپوز با موفقیت بازسازی بصری شد', 'info');
+            } catch (err) {
+                console.error('YAML Reconstruct error:', err);
+                showToast('خطا در تجزیه کدهای YAML: ' + err.message, 'error');
+                addServiceBlock();
+            }
+        }
+
+        // --- STREAMING_CHUNK:Interacting with REST APIs... ---
+        // --- API Integration Operations ---
+        async function loadComposes() {
+            const tbody = document.getElementById('compose-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center"><i class="fas fa-spinner fa-spin text-persian-cyan"></i> در حال دریافت ارکسترها...</td></tr>';
+            
+            try {
+                const response = await fetch(`/compose/?offset=${currentOffset}`);
+                if (!response.ok) throw new Error('API query failed');
+                
+                const resData = await response.json();
+                const data = resData.data || [];
+                totalRows = resData.total_rows || 0;
+                
+                const totalProjEl = document.getElementById('stat-total-projects');
+                if (totalProjEl) totalProjEl.innerText = totalRows;
+                let reservedIps = 0;
+                
+                tbody.innerHTML = '';
+                cachedComposes = {};
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-gray-500 text-sm">هیچ پشته داکر کامپوزی یافت نشد.</td></tr>';
+                } else {
+                    data.forEach(item => {
+                        const id = item.ID || item.id;
+                        const pName = item.ProjectName || item.project_name || 'نامشخص';
+                        const ips = item.IPs || item.ips || [];
+
+                        cachedComposes[id] = item; 
+                        
+                        const ipListStr = ips.map(ip => {
+                            reservedIps++;
+                            return ip.ip_address || ip.IPAddress || '';
+                        }).filter(Boolean).join(', ');
+                        
+                        const tr = document.createElement('tr');
+                        tr.className = "border-b border-white/5 hover:bg-white/5 transition-colors";
+                        tr.innerHTML = `
+                            <td class="py-3.5 px-6 font-mono text-gray-400">#${id}</td>
+                            <td class="py-3.5 px-6 font-bold text-white flex items-center gap-2">
+                                <i class="fab fa-docker text-blue-400"></i> ${pName}
+                            </td>
+                            <td class="py-3.5 px-6 font-mono text-xs text-persian-cyan">${ipListStr || '-'}</td>
+                            <td class="py-3.5 px-6 text-center">
+                                <div class="flex justify-center gap-3">
+                                    <button onclick="downloadCompose(${id})" class="w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white transition-all flex items-center justify-center" title="دانلود YAML">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button onclick="openEditor(${id})" class="w-8 h-8 rounded-lg bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white transition-all flex items-center justify-center" title="ویرایش بصری">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteCompose(${id})" class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition-all flex items-center justify-center" title="حذف پشته">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+                
+                const totalIpsEl = document.getElementById('stat-total-ips');
+                if (totalIpsEl) totalIpsEl.innerText = reservedIps;
+                updatePaginationControls();
+                
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-red-400 text-sm">خطا در دریافت اطلاعات از سرور GIN. لطفاً دوباره تلاش کنید.</td></tr>';
+            }
+        }
+
+        function updatePaginationControls() {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const info = document.getElementById('pagination-info');
+            
+            if (btnPrev) btnPrev.disabled = currentOffset === 0;
+            if (btnNext) btnNext.disabled = (currentOffset + limit) >= totalRows;
+            
+            if (info) {
+                const start = totalRows === 0 ? 0 : currentOffset + 1;
+                const end = Math.min(currentOffset + limit, totalRows);
+                info.innerText = `نمایش ${start} تا ${end} از مجموع ${totalRows} پشته ارکستری`;
+            }
+        }
+
+        function changePage(direction) {
+            currentOffset += direction * limit;
+            if (currentOffset < 0) currentOffset = 0;
+            loadComposes();
+        }
+
+        // --- STREAMING_CHUNK:Compiling and Sending save/update requests... ---
+        // --- Save Request ---
+        async function saveCompose() {
+            const payload = collectFormData(false);
+            if (!payload) return; 
+
+            const editIdInp = document.getElementById('edit-id');
+            const editId = editIdInp ? editIdInp.value : '';
+            const method = editId ? 'PUT' : 'POST';
+            const url = editId ? `/compose/${editId}` : '/compose/genrate'; 
+
+            try {
+                const btn = document.getElementById('btn-save-orchestration');
+                if (!btn) return;
+                const oldHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال کامپایل روی دیتابیس...';
+                btn.disabled = true;
+
+                if (editId) {
+                    const targetPath = "./storage/docker-Compose/";
+                    payload.Path = targetPath;
+                    payload.path = targetPath;
+                }
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast(data.message || 'عملیات پشته‌بندی با موفقیت اعمال شد');
+                    closeEditor(); 
+                } else {
+                    let errMsg = data.error || 'خطا در ثبت کامپوز';
+                    if (data.duplicated_ips) {
+                        errMsg += ` (IPهای متخاصم: ${data.duplicated_ips.join(', ')})`;
+                    }
+                    showToast(errMsg, 'error');
+                }
+                
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+
+            } catch (error) {
+                showToast('خطا در ارتباط شبکه با سرور', 'error');
+                console.error(error);
+                const btn = document.getElementById('btn-save-orchestration');
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // --- Delete Operation ---
+        function deleteCompose(id) {
+            const item = cachedComposes[id];
+            const pName = item ? (item.ProjectName || item.project_name) : `#${id}`;
+            
+            showConfirm(`آیا از حذف دائم پشته داکر کامپوز "${pName}" و آزادسازی تمام IPهای رزرو شده اطمینان کامل دارید؟`, async () => {
+                try {
+                    const response = await fetch(`/compose/${id}`, { method: 'DELETE' });
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showToast(data.message || 'پروژه حذف شد', 'success');
+                        loadComposes();
+                    } else {
+                        showToast(data.error || 'خطا در حذف پروژه', 'error');
+                    }
+                } catch (error) {
+                    showToast('خطا در ارتباط با سرور', 'error');
+                }
+            });
+        }
+
+        // --- STREAMING_CHUNK:Downloading Orchestration YAML... ---
+        // --- Download YAML file ---
+        async function downloadCompose(id) {
+            try {
+                const response = await fetch(`/compose/download/${id}`);
+                const data = await response.json();
+                
+                if (response.ok && data.url) {
+                    const a = document.createElement('a');
+                    a.href = data.url;
+                    a.target = '_blank';
+                    a.download = data.url.split('/').pop() || 'docker-compose.yml'; 
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showToast('بارگیری فایل داکر کامپوز آغاز شد', 'success');
+                } else {
+                    showToast(data.error || 'فایل تولیدی یافت نشد', 'error');
+                }
+            } catch (error) {
+                showToast('خطای زیرساختی در دریافت لینک بارگیری', 'error');
+            }
+        }
+
+        // --- On Application Startup ---
+        window.onload = function() {
+            loadComposes();
+            fetchMicroservices();
+        };
+
+    </script>
+</body>
+</html>

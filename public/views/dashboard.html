@@ -226,8 +226,8 @@
                 
                 <div class="flex items-center justify-between mt-auto border-t border-white/5 pt-4">
                     <span class="text-xs text-persian-cyan/70 font-mono border border-persian-cyan/20 bg-persian-cyan/5 px-2 py-1 rounded">Visual Builder</span>
-                    <button class="text-persian-cyan hover:text-white text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                        اجرای بیلدر <i class="fas fa-arrow-left text-xs"></i>
+                    <button onclick="compses()"  class="text-persian-gold hover:text-yellow-300 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        ورود به بخش <i class="fas fa-arrow-left text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -302,6 +302,9 @@
         }
         function microservices() {
             window.location.href = '/microservices';
+        }
+        function compses() {
+            window.location.href = '/composes';
         }
     </script>
 </body>
