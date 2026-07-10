@@ -30,6 +30,8 @@ func main() {
 		{Model: &migration.Framework{}, TableName: "framework"},
 		{Model: &migration.Command{}, TableName: "command"},
 		{Model: &migration.Microservice{}, TableName: "microservice"},
+		{Model: &migration.DockerCompose{}, TableName: "docker_compose"},
+		{Model: &migration.ComposeIP{}, TableName: "compose_ip"},
 	}
 	sqlite.RunMigrations(db, migrations...)
 	if err != nil {
@@ -49,11 +51,14 @@ func main() {
 	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/dashboard", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "dashboard.html", gin.H{})
 	})
-	router.GET("/frameworks", func(ctx *gin.Context) {
+	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/frameworks", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "frameworks.html", gin.H{})
 	})
-	router.GET("/microservices", func(ctx *gin.Context) {
+	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/microservices", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "microservices.html", gin.H{})
+	})
+	router.WithMiddlewares(authorizeSession.AuthorizeSession(db)).GET("/composes", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "compose.html", gin.H{})
 	})
 
 	user.SetupRouter(router, db)

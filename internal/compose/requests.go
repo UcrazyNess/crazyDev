@@ -1,5 +1,18 @@
 package compose
 
+type CreateAndGenerateRequest struct {
+	ProjectName string                 `json:"project_name" binding:"required"`
+	IPs         []string               `json:"ips"`
+	Compose     GenerateComposeRequest `json:"compose" binding:"required"`
+}
+
+type UpdateComposeRequest struct {
+	ProjectName *string  `json:"project_name" binding:"required"`
+	IPs         []string `json:"ips"`
+	Path        *string
+	Compose     *GenerateComposeRequest `json:"compose" binding:"required"`
+}
+
 // GenerateComposeRequest تنها استراکت ورودی از سمت API (Gin Request)
 type GenerateComposeRequest struct {
 	Version  string    `json:"version" binding:"required"`
