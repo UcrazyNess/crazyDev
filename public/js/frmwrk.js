@@ -1,208 +1,151 @@
-// ==========================================
-// STATE & VARIABLES
-// ==========================================
-let frameworksList = [];
-let currentOffset = 0;
-const limit = 10;
-let isEditMode = false;
-let isFetching = false;
+// API Configuration (Update these base URLs if necessary)
+const API_FRAMEWORKS = '/framework';
+const API_COMMANDS = '/command';
 
-let commandsList = [];
-let currentCmdFrameworkId = null;
-let currentCmdFrameworkSlug = null;
-let isCmdEditMode = false;
+// State Management
+let frameworks = [];
+let commands = [];
+let currentFrameworkId = null;
+let currentFrameworkSlug = null;
+let currentPage = 0;
+let hasMore = true;
 
-// API URLs - Match these with your Gin Routes
-const FW_API_URL = '/framework';
-const CMD_API_URL = '/command';
-
-// ==========================================
-// UI HELPERS (TOASTS)
-// ==========================================
+// ----- Toast Notification System -----
 function showToast(message, type = 'success') {
-    const id = 'toast-' + Math.random().toString(36).substr(2, 9);
-    const container = document.getElementById('toast-container');
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
     
-    const colors = {
-        success: 'bg-green-500/20 border-green-500/50 text-green-400',
-        error: 'bg-red-500/20 border-red-500/50 text-red-400',
-        info: 'bg-blue-500/20 border-blue-500/50 text-blue-400'
-    };
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        info: 'fa-info-circle'
-    };
-
-    const html = `
-        <div id="${id}" class="flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-md shadow-lg animate-slide-in ${colors[type]} transition-all duration-300">
-            <i class="fas ${icons[type]} text-lg"></i>
-            <span class="text-sm font-medium text-white">${message}</span>
-        </div>
+    const bgColor = type === 'success' ? 'bg-green-600/90 border-green-400' : 'bg-red-600/90 border-red-400';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    toast.className = `${bgColor} border backdrop-blur-sm text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fade-in transform transition-all duration-300 ease-out translate-y-0 opacity-100`;
+    toast.innerHTML = `
+        <i class="fas ${icon} text-lg"></i>
+        <span class="text-sm font-medium">${message}</span>
     `;
-    container.insertAdjacentHTML('beforeend', html);
-
+    
+    toastContainer.appendChild(toast);
+    
     setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(10px)';
-            setTimeout(() => el.remove(), 300);
-        }
-    }, 5000);
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
-// ==========================================
-// FRAMEWORK MANAGEMENT LOGIC
-// ==========================================
-
-async function fetchFrameworks(offset = 0) {
-    if (isFetching) return;
-    isFetching = true;
-    
+// ----- Frameworks Management -----
+async function fetchFrameworks(page = 0, append = false) {
     const spinner = document.getElementById('loading-spinner');
     const loadMoreBtn = document.getElementById('load-more-container');
     
-    if (offset === 0) {
+    if (!append) {
         spinner.classList.remove('hidden');
         document.getElementById('frameworks-grid').innerHTML = '';
     }
-
+    
     try {
-        // Mocking API delay for visual effect
-        // await new Promise(r => setTimeout(r, 500)); 
-        
-        const response = await fetch(`${FW_API_URL}/?offset=${offset}`);
-        
-        // --- MOCK DATA FOR DEMONSTRATION IF API FAILS ---
-        if(!response.ok && offset === 0) {
-                showToast('اجرای حالت دمو (خطا در اتصال به API).', 'info');
-                renderFrameworksMock();
-                return;
-        }
-        
+        // Mock API call structure for frameworks (Modify as per your real backend)
+        const response = await fetch(`${API_FRAMEWORKS}/?offset=${page * 10}`);
         if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
         
-        const resData = await response.json();
-        const data = resData.Data || resData.data || resData;
-
-        if (offset === 0) frameworksList = [];
-        frameworksList = [...frameworksList, ...data];
+        const data = await response.json(); 
         
-        renderFrameworks(data);
-        
-        if (data.length === limit) {
-            loadMoreBtn.classList.remove('hidden');
-            currentOffset += limit;
+        if (data.data) {
+            if (append) frameworks = [...frameworks, ...data.data];
+            else frameworks = data.data;
+            
+            hasMore = data.data.length === (data.limit || 10);
+            renderFrameworks();
         } else {
-            loadMoreBtn.classList.add('hidden');
+            // Fallback if data format differs
+            frameworks = [];
         }
-
     } catch (error) {
-        showToast(error.message, 'error');
+        showToast('ارتباط با سرور برقرار نشد (لیست آزمایشی نمایش داده می‌شود)', 'error');
+        // Mock Data injection on fail for visual test
+        if (!append) frameworks = [
+            { id: '1', name: 'Laravel', language: 'PHP', description: 'The PHP Framework for Web Artisans.', slug: 'laravel', is_featured: true },
+            { id: '2', name: 'React', language: 'JavaScript', description: 'A JavaScript library for building user interfaces.', slug: 'react', is_featured: false }
+        ];
+        renderFrameworks();
+        hasMore = false;
     } finally {
         spinner.classList.add('hidden');
-        isFetching = false;
+        loadMoreBtn.classList.toggle('hidden', !hasMore);
     }
 }
 
-function loadMore() {
-    fetchFrameworks(currentOffset);
-}
-
-function renderFrameworks(items) {
+function renderFrameworks() {
     const grid = document.getElementById('frameworks-grid');
-    const fragment = document.createDocumentFragment();
-
-    items.forEach(fw => {
-        // Handle different JSON casing depending on Go struct mapping
-        const id = fw.id || fw.ID || fw.Id;
-        const name = fw.name || fw.Name;
-        const slug = fw.slug || fw.Slug;
-        const lang = fw.language || fw.Language;
-        const desc = fw.description || fw.Description || 'توضیحاتی ثبت نشده است.';
-        const web = fw.website || fw.Website;
-        const repo = fw.repository || fw.Repository;
-        const isFeatured = fw.is_featured || fw.IsFeatured;
-
-        const card = document.createElement('div');
-        card.id = `fw-${slug}`;
-        card.className = 'glow-box rounded-2xl p-6 group flex flex-col h-full relative overflow-hidden animate-fade-in';
-        
-        if (isFeatured) {
-            card.innerHTML += `<div class="absolute top-0 right-0 w-20 h-20 bg-purple-600/20 blur-2xl rounded-full"></div>
-                                <div class="absolute -right-6 -top-6 text-yellow-500/20 text-6xl rotate-12"><i class="fas fa-star"></i></div>`;
-        }
-
-        card.innerHTML += `
-            <div class="flex justify-between items-start mb-4 relative z-10">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-dark-bg border border-white/10 rounded-xl flex items-center justify-center text-xl text-gray-300 shadow-inner">
-                        ${lang.toLowerCase().includes('php') ? '<i class="fab fa-php text-indigo-400"></i>' : 
-                            lang.toLowerCase().includes('js') || lang.toLowerCase().includes('node') ? '<i class="fab fa-node-js text-green-400"></i>' :
-                            lang.toLowerCase().includes('go') ? '<i class="fab fa-golang text-cyan-400"></i>' :
-                            lang.toLowerCase().includes('python') ? '<i class="fab fa-python text-yellow-400"></i>' :
-                            '<i class="fas fa-code text-gray-400"></i>'}
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                            ${name}
-                            ${isFeatured ? '<i class="fas fa-check-circle text-persian-cyan text-xs" title="ویژه"></i>' : ''}
-                        </h3>
-                        <span class="text-xs font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded border border-purple-400/20">${lang}</span>
-                    </div>
+    grid.innerHTML = frameworks.map(fw => `
+        <div class="glow-box p-6 rounded-2xl flex flex-col h-full relative group">
+            ${fw.is_featured ? '<div class="absolute -top-3 -right-3 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg shadow-purple-600/30 border border-purple-400 z-10">ویژه</div>' : ''}
+            
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex-grow">
+                    <h3 class="text-xl font-title text-white mb-1 group-hover:text-persian-cyan transition-colors">${fw.name}</h3>
+                    <span class="text-xs bg-dark-bg border border-white/10 text-gray-300 px-2 py-1 rounded-md font-mono">${fw.language}</span>
+                </div>
+                
+                <div class="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editFramework('${fw.id}')" class="w-8 h-8 rounded-lg bg-dark-bg border border-white/10 text-gray-400 hover:text-white hover:border-purple-500 transition-all flex items-center justify-center">
+                        <i class="fas fa-edit text-sm"></i>
+                    </button>
+                    <button onclick="deleteFramework('${fw.id}')" class="w-8 h-8 rounded-lg bg-dark-bg border border-white/10 text-gray-400 hover:text-white hover:border-red-500 transition-all flex items-center justify-center">
+                        <i class="fas fa-trash text-sm"></i>
+                    </button>
                 </div>
             </div>
             
-            <p class="text-gray-400 text-sm leading-relaxed mb-4 flex-grow relative z-10">${desc}</p>
+            <p class="text-gray-400 text-sm mb-6 flex-grow line-clamp-3">${fw.description || 'بدون توضیحات'}</p>
             
-            <div class="flex items-center gap-3 mb-4 text-sm relative z-10">
-                ${web ? `<a href="${web}" target="_blank" class="text-gray-500 hover:text-persian-cyan transition-colors" title="وب‌سایت"><i class="fas fa-globe"></i></a>` : ''}
-                ${repo ? `<a href="${repo}" target="_blank" class="text-gray-500 hover:text-white transition-colors" title="مخزن کد"><i class="fab fa-github"></i></a>` : ''}
-            </div>
-
-            <div class="flex justify-between items-center pt-4 border-t border-white/5 gap-2 relative z-10">
-                <!-- دکمه دستورات - ارسال آیدی به عنوان پارامتر اول -->
-                <button onclick="openCommandsModal('${id}', '${slug}', '${name}')" class="flex-[2] bg-persian-cyan/10 hover:bg-persian-cyan/20 border border-persian-cyan/30 hover:border-persian-cyan text-persian-cyan py-2 rounded-lg text-sm transition-all flex justify-center items-center gap-2 font-bold shadow-lg shadow-persian-cyan/5">
-                    <i class="fas fa-terminal text-xs"></i> دستورات
-                </button>
-                <button onclick="editFramework('${slug}')" class="flex-1 bg-dark-surface hover:bg-purple-600/20 border border-white/5 hover:border-purple-500/50 text-gray-300 hover:text-white py-2 rounded-lg text-sm transition-all flex justify-center items-center gap-2">
-                    <i class="fas fa-pen text-xs"></i>
-                </button>
-                <button onclick="confirmDelete('${slug}')" class="w-10 h-[38px] bg-dark-surface hover:bg-red-500/20 border border-white/5 hover:border-red-500/50 text-gray-400 hover:text-red-400 rounded-lg transition-all flex justify-center items-center shrink-0">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
-        `;
-        fragment.appendChild(card);
-    });
-    grid.appendChild(fragment);
+            <button onclick="openCommandsModal('${fw.id}', '${fw.slug}')" class="w-full bg-dark-bg border border-persian-cyan/30 text-persian-cyan hover:bg-persian-cyan hover:text-dark-bg py-2.5 rounded-xl transition-all font-bold flex items-center justify-center gap-2 group/btn">
+                <i class="fas fa-terminal group-hover/btn:animate-pulse"></i>
+                مدیریت دستورات
+            </button>
+        </div>
+    `).join('');
 }
 
-const modal = document.getElementById('framework-modal');
-const form = document.getElementById('framework-form');
+function loadMore() {
+    if (hasMore) {
+        currentPage++;
+        fetchFrameworks(currentPage, true);
+    }
+}
 
+// --- Framework Form Actions ---
 function openAddModal() {
-    isEditMode = false;
-    form.reset();
-    document.getElementById('f-slug').value = '';
+    document.getElementById('framework-form').reset();
     document.getElementById('f-id').value = '';
     document.getElementById('modal-title').innerHTML = '<i class="fas fa-plus-circle text-purple-400"></i> افزودن فریم‌ورک';
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    document.getElementById('framework-modal').classList.remove('hidden');
+    document.getElementById('framework-modal').classList.add('flex');
 }
 
 function closeModal() {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    document.getElementById('framework-modal').classList.add('hidden');
+    document.getElementById('framework-modal').classList.remove('flex');
+}
+
+function editFramework(id) {
+    const fw = frameworks.find(f => f.id == id);
+    if (!fw) return;
+
+    document.getElementById('f-id').value = fw.id;
+    document.getElementById('f-name').value = fw.name;
+    document.getElementById('f-language').value = fw.language;
+    document.getElementById('f-desc').value = fw.description || '';
+    document.getElementById('f-website').value = fw.website || '';
+    document.getElementById('f-repo').value = fw.repository || '';
+    document.getElementById('f-featured').checked = fw.is_featured;
+
+    document.getElementById('modal-title').innerHTML = '<i class="fas fa-edit text-purple-400"></i> ویرایش فریم‌ورک';
+    document.getElementById('framework-modal').classList.remove('hidden');
+    document.getElementById('framework-modal').classList.add('flex');
 }
 
 async function saveFramework() {
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
+    const id = document.getElementById('f-id').value;
     const payload = {
         name: document.getElementById('f-name').value,
         language: document.getElementById('f-language').value,
@@ -212,454 +155,313 @@ async function saveFramework() {
         is_featured: document.getElementById('f-featured').checked
     };
 
-    const btn = document.getElementById('save-btn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
-    btn.disabled = true;
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${API_FRAMEWORKS}/${id}` : API_FRAMEWORKS;
 
     try {
-        let url = FW_API_URL + '/';
-        let method = 'POST';
-
-        if (isEditMode) {
-            const slug = document.getElementById('f-slug').value;
-            url = `${FW_API_URL}/${slug}`;
-            method = 'PUT';
-        }
-
         const response = await fetch(url, {
-            method: method,
+            method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            throw new Error(err.error || 'خطا در ذخیره‌سازی داده');
+        if (response.ok) {
+            showToast(`فریم‌ورک با موفقیت ${id ? 'بروزرسانی' : 'ثبت'} شد`);
+            closeModal();
+            currentPage = 0;
+            fetchFrameworks();
+        } else {
+            const data = await response.json();
+            showToast(data.error || 'خطا در ذخیره اطلاعات', 'error');
         }
-
-        showToast(isEditMode ? 'فریم‌ورک با موفقیت بروزرسانی شد' : 'فریم‌ورک جدید با موفقیت اضافه شد', 'success');
-        closeModal();
-        
-        // Refresh list
-        currentOffset = 0;
-        fetchFrameworks(0);
-
-    } catch (error) {
-        showToast(error.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-save"></i> ذخیره اطلاعات';
+    } catch (e) {
+        showToast('خطا در برقراری ارتباط', 'error');
     }
 }
 
-function editFramework(slug) {
-    const fw = frameworksList.find(f => (f.slug || f.Slug) === slug);
-    if (!fw) return;
-
-    isEditMode = true;
-    document.getElementById('f-slug').value = slug;
-    document.getElementById('f-id').value = fw.id || fw.ID || fw.Id;
-    document.getElementById('f-name').value = fw.name || fw.Name;
-    document.getElementById('f-language').value = fw.language || fw.Language;
-    document.getElementById('f-desc').value = fw.description || fw.Description || '';
-    document.getElementById('f-website').value = fw.website || fw.Website || '';
-    document.getElementById('f-repo').value = fw.repository || fw.Repository || '';
-    document.getElementById('f-featured').checked = fw.is_featured || fw.IsFeatured;
-
-    document.getElementById('modal-title').innerHTML = '<i class="fas fa-pen text-purple-400"></i> ویرایش فریم‌ورک';
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function confirmDelete(slug) {
-    const toastHtml = `
-        <div id="confirm-${slug}" class="bg-dark-surface border border-red-500/50 shadow-2xl shadow-red-900/20 rounded-xl p-4 w-80 animate-slide-in relative overflow-hidden z-[100]">
-            <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
-            <div class="flex items-start gap-3">
-                <i class="fas fa-exclamation-triangle text-red-400 text-xl mt-0.5"></i>
-                <div>
-                    <h4 class="text-white font-bold text-sm mb-1">تایید حذف</h4>
-                    <p class="text-gray-400 text-xs mb-3">آیا از حذف این فریم‌ورک و تمامی اطلاعات آن مطمئن هستید؟</p>
-                    <div class="flex gap-2">
-                        <button onclick="executeDelete('${slug}')" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-colors">بله، حذف کن</button>
-                        <button onclick="document.getElementById('confirm-${slug}').remove()" class="bg-dark-bg border border-white/10 hover:bg-white/5 text-gray-300 px-3 py-1.5 rounded text-xs transition-colors">انصراف</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.getElementById('toast-container').insertAdjacentHTML('beforeend', toastHtml);
-}
-
-async function executeDelete(slug) {
-    const confirmBox = document.getElementById(`confirm-${slug}`);
-    if(confirmBox) confirmBox.remove();
-
+async function deleteFramework(id) {
+    if (!confirm('آیا از حذف این فریم‌ورک و تمامی دستورات آن اطمینان دارید؟')) return;
     try {
-        const response = await fetch(`${FW_API_URL}/${slug}`, {
-            method: 'DELETE'
-        });
-
-        if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            throw new Error(err.error || 'خطا در حذف رکورد');
+        const response = await fetch(`${API_FRAMEWORKS}/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            showToast('فریم‌ورک با موفقیت حذف شد');
+            currentPage = 0;
+            fetchFrameworks();
+        } else {
+            showToast('خطا در حذف فریم‌ورک', 'error');
         }
-
-        showToast('فریم‌ورک با موفقیت حذف شد.', 'success');
-        
-        // Remove from UI
-        const card = document.getElementById(`fw-${slug}`);
-        if(card) {
-            card.style.transform = 'scale(0.9)';
-            card.style.opacity = '0';
-            setTimeout(() => card.remove(), 300);
-        }
-
-    } catch (error) {
-        showToast(error.message, 'error');
+    } catch (e) {
+        showToast('خطا در برقراری ارتباط', 'error');
     }
 }
 
-
-// ==========================================
-// COMMANDS MANAGEMENT LOGIC
-// ==========================================
-
-const cmdModal = document.getElementById('commands-modal');
-const cmdForm = document.getElementById('command-form');
-const cId = document.getElementById('c-id');
-const cAlias = document.getElementById('c-alias');
-const cCommand = document.getElementById('c-command');
-const cDesc = document.getElementById('c-desc');
-const cOptions = document.getElementById('c-options');
-const cFeatured = document.getElementById('c-featured');
-const cmdsContainer = document.getElementById('commands-container');
-const cancelCmdBtn = document.getElementById('cancel-cmd-btn');
-const formTitle = document.getElementById('cmd-form-title');
-const saveCmdBtn = document.getElementById('save-cmd-btn');
-
-async function openCommandsModal(fId, fSlug, fName) {
-    if(!fId) {
-        showToast('خطا در دریافت شناسه فریم‌ورک. لطفاً صفحه را رفرش کنید.', 'error');
-        return;
-    }
-    
-    // ذخیره آیدی فریم‌ورک برای ساخت کامند
-    currentCmdFrameworkId = String(fId);
-    currentCmdFrameworkSlug = fSlug;
-    
-    document.getElementById('cmd-modal-title').innerHTML = `<i class="fas fa-terminal text-persian-cyan"></i> دستورات فریم‌ورک: <span class="text-white">${fName}</span>`;
-    cmdModal.classList.remove('hidden');
-    cmdModal.classList.add('flex');
+// ----- Commands Management -----
+function openCommandsModal(id, slug) {
+    currentFrameworkId = id;
+    currentFrameworkSlug = slug;
+    document.getElementById('cmd-modal-title').innerHTML = `
+        <i class="fas fa-terminal text-persian-cyan"></i>
+        دستورات فریم‌ورک 
+    `;
+    document.getElementById('commands-modal').classList.remove('hidden');
+    document.getElementById('commands-modal').classList.add('flex');
     
     resetCommandForm();
-    await fetchCommands();
+    fetchCommands();
 }
 
 function closeCommandsModal() {
-    cmdModal.classList.add('hidden');
-    cmdModal.classList.remove('flex');
-    currentCmdFrameworkId = null;
-    commandsList = [];
+    document.getElementById('commands-modal').classList.add('hidden');
+    document.getElementById('commands-modal').classList.remove('flex');
+    currentFrameworkId = null;
 }
 
-function resetCommandForm() {
-    cmdForm.reset();
-    cId.value = '';
-    cOptions.value = '{}';
-    isCmdEditMode = false;
-    cancelCmdBtn.classList.add('hidden');
-    formTitle.innerHTML = '<i class="fas fa-plus-circle text-persian-cyan"></i> افزودن دستور جدید';
-    saveCmdBtn.innerHTML = '<i class="fas fa-save"></i> ثبت دستور';
+// Toggle UI based on action_type
+function toggleFileFields() {
+    const type = document.getElementById('c-action-type').value;
+    const fileFields = document.getElementById('file-fields-container');
+    const fileInput = document.getElementById('c-file');
+    const fileNameInput = document.getElementById('c-file-name');
+    const pathInput = document.getElementById('c-path');
+
+    if (type === 'generate') {
+        fileFields.classList.remove('hidden');
+        fileInput.required = true;
+        fileNameInput.required = true;
+        pathInput.required = true;
+    } else {
+        fileFields.classList.add('hidden');
+        fileInput.required = false;
+        fileNameInput.required = false;
+        pathInput.required = false;
+    }
 }
 
 async function fetchCommands() {
-    const loader = document.getElementById('commands-list-loading');
-    loader.classList.remove('hidden');
+    document.getElementById('commands-list-loading').classList.remove('hidden');
     
     try {
-        // ارسال درخواست بر اساس slug به بک‌اند
-        const response = await fetch(`${CMD_API_URL}/?framework=${currentCmdFrameworkSlug}&offset=0`);
+        const response = await fetch(`${API_COMMANDS}/?framework=${currentFrameworkSlug}`);
+        if (!response.ok) throw new Error('خطا در دریافت دستورات');
         
-        // MOCK DEMO
-        if(!response.ok) {
-            showToast('حالت دمو: قادر به دریافت دستورات از API نیست.', 'info');
-            commandsList = [];
-            renderCommands();
-            return;
-        }
-        
-        const res = await response.json();
-        commandsList = res.Data || res.data || res.Items || res.items || (Array.isArray(res) ? res : []);
-        
+        const data = await response.json();
+        commands = data.data || [];
         renderCommands();
     } catch (error) {
-        showToast(error.message, 'error');
-        cmdsContainer.innerHTML = `<div class="text-center text-red-400 p-4 border border-red-500/20 bg-red-900/10 rounded-xl font-mono text-sm">خطا در برقراری ارتباط با سرویس Command</div>`;
+        commands = [];
+        renderCommands();
+        showToast('مشکل در دریافت لیست دستورات', 'error');
     } finally {
-        loader.classList.add('hidden');
+        document.getElementById('commands-list-loading').classList.add('hidden');
     }
 }
 
 function renderCommands() {
-    document.getElementById('cmd-count').innerText = `${commandsList.length} مورد`;
-    cmdsContainer.innerHTML = '';
-
-    if (commandsList.length === 0) {
-        cmdsContainer.innerHTML = `
-            <div class="text-center py-12 text-gray-500 border border-dashed border-white/10 rounded-xl bg-dark-surface/20 flex flex-col items-center gap-3">
-                <i class="fas fa-ghost text-4xl opacity-50"></i>
-                <p class="font-mono text-sm">دستوری برای این فریم‌ورک یافت نشد.</p>
-            </div>`;
+    const container = document.getElementById('commands-container');
+    document.getElementById('cmd-count').innerText = `${commands.length} مورد`;
+    
+    if (commands.length === 0) {
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-12 text-gray-500">
+                <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
+                <p>هیچ دستوری ثبت نشده است.</p>
+            </div>
+        `;
         return;
     }
 
-    const fragment = document.createDocumentFragment();
-    commandsList.forEach(cmd => {
-        const id = cmd.ID || cmd.Id || cmd.id;
-        const alias = cmd.Alias || cmd.alias;
-        const commandStr = cmd.Command || cmd.command;
-        const desc = cmd.Description || cmd.description || 'بدون توضیح';
-        const isFeatured = cmd.IsFeatured || cmd.is_featured;
-
-        const item = document.createElement('div');
-        item.className = 'bg-dark-surface border border-white/5 rounded-xl p-4 hover:border-persian-cyan/30 transition-all flex flex-col gap-3 group relative overflow-hidden';
-        
-        if (isFeatured) {
-            item.innerHTML += `<div class="absolute top-0 right-0 w-1 h-full bg-persian-cyan shadow-[0_0_10px_#00E5FF]"></div>`;
-        }
-
-        item.innerHTML += `
-            <div class="flex justify-between items-start gap-2 relative z-10">
+    container.innerHTML = commands.map(cmd => `
+        <div class="bg-dark-surface border border-white/5 p-4 rounded-xl hover:border-persian-cyan/30 transition-all flex flex-col gap-3 group">
+            <div class="flex justify-between items-start">
                 <div>
-                    <h4 class="text-white font-bold text-sm flex items-center gap-2">
-                        ${alias}
-                        ${isFeatured ? '<i class="fas fa-bolt text-persian-cyan text-xs" title="دستور ویژه"></i>' : ''}
-                    </h4>
-                    <p class="text-gray-400 text-xs mt-1.5">${desc}</p>
+                    <div class="flex items-center gap-2 mb-1">
+                        <h4 class="text-white font-bold text-sm">${cmd.alias}</h4>
+                        ${cmd.is_featured ? '<span class="text-[10px] bg-persian-cyan/20 text-persian-cyan px-2 py-0.5 rounded border border-persian-cyan/30">ویژه</span>' : ''}
+                        ${cmd.action_type === 'generate' ? '<span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">ساخت فایل</span>' : '<span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">اجرایی</span>'}
+                    </div>
+                    <p class="text-xs text-gray-400 font-mono bg-dark-bg px-2 py-1 rounded inline-block" dir="ltr">${cmd.command}</p>
                 </div>
-                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-dark-bg border border-white/5 rounded-lg p-1 shrink-0">
-                    <button onclick="editCommand('${id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors" title="ویرایش">
-                        <i class="fas fa-pen text-xs"></i>
+                <div class="flex gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editCommand('${cmd.ID || cmd.id}')" class="w-7 h-7 bg-dark-bg hover:bg-white/10 text-gray-400 hover:text-white rounded flex items-center justify-center transition-colors">
+                        <i class="fas fa-edit text-xs"></i>
                     </button>
-                    <button onclick="confirmDeleteCommand('${id}', '${alias}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors" title="حذف">
-                        <i class="fas fa-trash-alt text-xs"></i>
+                    <button onclick="deleteCommand('${cmd.ID || cmd.id}')" class="w-7 h-7 bg-dark-bg hover:bg-white/10 text-gray-400 hover:text-red-400 rounded flex items-center justify-center transition-colors">
+                        <i class="fas fa-trash text-xs"></i>
                     </button>
                 </div>
             </div>
-            <div class="bg-[#0B0F19] rounded-lg p-3 font-mono text-[13px] text-persian-cyan border border-white/5 flex justify-between items-center group/code relative z-10">
-                <code class="break-all font-semibold" dir="ltr">${commandStr}</code>
-                <button onclick="navigator.clipboard.writeText('${commandStr.replace(/'/g, "\\'")}').then(() => showToast('دستور کپی شد', 'info'))" class="text-gray-500 hover:text-white opacity-0 group-hover/code:opacity-100 transition-opacity mr-2">
-                    <i class="far fa-copy"></i>
-                </button>
-            </div>
-        `;
-        fragment.appendChild(item);
-    });
-    cmdsContainer.appendChild(fragment);
+            ${cmd.description ? `<p class="text-xs text-gray-500 border-t border-white/5 pt-2">${cmd.description}</p>` : ''}
+        </div>
+    `).join('');
 }
 
 async function saveCommand() {
-    if (!cmdForm.checkValidity()) {
-        cmdForm.reportValidity();
+    const id = document.getElementById('c-id').value;
+    let optionsStr = "{}";
+    
+    try {
+        const optionsVal = document.getElementById('c-options').value;
+        const parsed = optionsVal ? JSON.parse(optionsVal) : {};
+        optionsStr = JSON.stringify(parsed); // ارسال به صورت String هماهنگ با ساختار دیتابیس
+    } catch (e) {
+        showToast('فرمت JSON آپشن‌ها نامعتبر است', 'error');
         return;
     }
 
-    // اعتبارسنجی Options برای دیتاتایپ json.RawMessage
-    let optionsObj = {};
-    const optionsRaw = cOptions.value.trim();
-    if (optionsRaw) {
-        try {
-            optionsObj = JSON.parse(optionsRaw);
-        } catch (e) {
-            showToast('فرمت JSON در بخش تنظیمات نامعتبر است.', 'error');
-            cOptions.focus();
-            return;
-        }
-    }
+    const actionType = document.getElementById('c-action-type').value;
 
-    // توجه: فیلد framework_id برای Go به صورت string ارسال میشود
     const payload = {
-        alias: cAlias.value.trim(),
-        command: cCommand.value.trim(),
-        framework_id: String(currentCmdFrameworkId), 
-        description: cDesc.value.trim(),
-        options: optionsObj, // ارسال به صورت آبجکت جیسون (json.RawMessage هندل می‌کند)
-        is_featured: cFeatured.checked
+        alias: document.getElementById('c-alias').value,
+        command: document.getElementById('c-command').value,
+        action_type: actionType,
+        framework_id: currentFrameworkId,
+        description: document.getElementById('c-desc').value,
+        options: optionsStr,
+        is_featured: document.getElementById('c-featured').checked
     };
 
-    saveCmdBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> پردازش...';
-    saveCmdBtn.disabled = true;
+    if (actionType === 'generate') {
+        payload.file_name = document.getElementById('c-file-name').value;
+        payload.paths = document.getElementById('c-path').value;
+        payload.file = document.getElementById('c-file').value;
+    }
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${API_COMMANDS}/${id}` : API_COMMANDS;
 
     try {
-        let response;
-        if (isCmdEditMode) {
-            // Update Request
-            response = await fetch(`${CMD_API_URL}/${cId.value}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+        const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            showToast(`دستور با موفقیت ${id ? 'ویرایش' : 'ثبت'} شد`);
+            resetCommandForm();
+            fetchCommands();
         } else {
-            // Create Request
-            response = await fetch(`${CMD_API_URL}/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const data = await response.json();
+            showToast(data.error || 'خطا در ثبت دستور', 'error');
         }
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error || 'خطا در ذخیره‌سازی دستور');
-        }
-
-        showToast(isCmdEditMode ? 'تغییرات دستور ثبت شد.' : 'دستور جدید اضافه شد.', 'success');
-        resetCommandForm();
-        await fetchCommands();
-
-    } catch (error) {
-        showToast(error.message, 'error');
-    } finally {
-        saveCmdBtn.disabled = false;
-        saveCmdBtn.innerHTML = '<i class="fas fa-save"></i> ' + (isCmdEditMode ? 'ویرایش دستور' : 'ثبت دستور');
+    } catch (e) {
+        showToast('خطا در برقراری ارتباط', 'error');
     }
 }
 
 function editCommand(id) {
-    const cmd = commandsList.find(c => String(c.ID || c.Id || c.id) === String(id));
+    const cmd = commands.find(c => (c.ID == id || c.id == id));
     if (!cmd) return;
 
-    isCmdEditMode = true;
-    cId.value = id;
-    cAlias.value = cmd.Alias || cmd.alias;
-    cCommand.value = cmd.Command || cmd.command;
-    cDesc.value = cmd.Description || cmd.description || '';
-    cFeatured.checked = cmd.IsFeatured || cmd.is_featured;
+    document.getElementById('cmd-form-title').innerHTML = '<i class="fas fa-edit text-persian-cyan"></i> ویرایش دستور';
+    document.getElementById('c-id').value = cmd.ID || cmd.id;
+    document.getElementById('c-alias').value = cmd.alias;
+    document.getElementById('c-command').value = cmd.command;
+    document.getElementById('c-desc').value = cmd.description || '';
+    document.getElementById('c-options').value = typeof cmd.options === 'string' ? cmd.options : JSON.stringify(cmd.options || {});
+    document.getElementById('c-featured').checked = cmd.is_featured;
     
-    // تبدیل باینری/آبجکت Options به رشته زیبا (Pretty JSON)
-    const opts = cmd.Options || cmd.options;
-    try {
-        cOptions.value = (typeof opts === 'string' && opts.trim() !== '') ? JSON.stringify(JSON.parse(opts), null, 2) : (typeof opts === 'object' ? JSON.stringify(opts, null, 2) : '{}');
-    } catch {
-        cOptions.value = opts || '{}';
+    const actionType = cmd.action_type || 'execute';
+    document.getElementById('c-action-type').value = actionType;
+    
+    if (actionType === 'generate') {
+        document.getElementById('c-file-name').value = cmd.file_name || '';
+        document.getElementById('c-path').value = cmd.paths || '';
+        document.getElementById('c-file').value = cmd.file || ''; // Note: API should return file content if possible
     }
+    
+    toggleFileFields();
 
-    formTitle.innerHTML = '<i class="fas fa-pen text-persian-cyan"></i> ویرایش دستور';
-    saveCmdBtn.innerHTML = '<i class="fas fa-save"></i> اعمال ویرایش';
-    cancelCmdBtn.classList.remove('hidden');
+    document.getElementById('save-cmd-btn').innerHTML = '<i class="fas fa-save"></i> بروزرسانی';
+    document.getElementById('cancel-cmd-btn').classList.remove('hidden');
 }
 
-function confirmDeleteCommand(id, alias) {
-    const toastHtml = `
-        <div id="confirm-cmd-${id}" class="bg-dark-surface border border-red-500/50 shadow-2xl shadow-red-900/20 rounded-xl p-4 w-80 animate-slide-in relative overflow-hidden z-[100]">
-            <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
-            <div class="flex items-start gap-3">
-                <i class="fas fa-exclamation-triangle text-red-400 text-xl mt-0.5"></i>
-                <div>
-                    <h4 class="text-white font-bold text-sm mb-1">تایید حذف دستور</h4>
-                    <p class="text-gray-400 text-xs mb-3">آیا از حذف دستور "<span class="text-gray-200">${alias}</span>" مطمئن هستید؟</p>
-                    <div class="flex gap-2">
-                        <button onclick="executeDeleteCommand('${id}')" class="bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-colors">بله</button>
-                        <button onclick="document.getElementById('confirm-cmd-${id}').remove()" class="bg-dark-bg border border-white/10 hover:bg-white/5 text-gray-300 px-3 py-1.5 rounded text-xs transition-colors">انصراف</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.getElementById('toast-container').insertAdjacentHTML('beforeend', toastHtml);
+function resetCommandForm() {
+    document.getElementById('command-form').reset();
+    document.getElementById('c-id').value = '';
+    document.getElementById('c-options').value = '{}';
+    document.getElementById('cmd-form-title').innerHTML = '<i class="fas fa-plus-circle text-persian-cyan"></i> افزودن دستور جدید';
+    document.getElementById('save-cmd-btn').innerHTML = '<i class="fas fa-save"></i> ثبت دستور';
+    document.getElementById('cancel-cmd-btn').classList.add('hidden');
+    
+    // Reset action type UI
+    document.getElementById('c-action-type').value = 'execute';
+    toggleFileFields();
 }
 
-async function executeDeleteCommand(id) {
-    const confirmBox = document.getElementById(`confirm-cmd-${id}`);
-    if(confirmBox) confirmBox.remove();
-
+async function deleteCommand(id) {
+    if (!confirm('آیا از حذف این دستور اطمینان دارید؟')) return;
     try {
-        const response = await fetch(`${CMD_API_URL}/${id}`, {
-            method: 'DELETE'
-        });
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error || 'خطا در حذف دستور');
+        const response = await fetch(`${API_COMMANDS}/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            showToast('دستور با موفقیت حذف شد');
+            fetchCommands();
+            if(document.getElementById('c-id').value == id) resetCommandForm();
+        } else {
+            showToast('خطا در حذف دستور', 'error');
         }
-
-        showToast('دستور حذف شد.', 'success');
-        await fetchCommands();
-        
-        // ریست فرم اگر در حال ویرایش همان دستور بودیم
-        if (isCmdEditMode && cId.value === String(id)) {
-            resetCommandForm();
-        }
-
-    } catch (error) {
-        showToast(error.message, 'error');
+    } catch (e) {
+        showToast('خطا در برقراری ارتباط', 'error');
     }
 }
 
+// ----- Exports -----
 
-// ==========================================
-// JSON EXPORT LOGIC
-// ==========================================
-
+// تابع کمکی برای ساخت و دانلود فایل JSON
 function downloadJSON(data, filename) {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 4));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", filename);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    showToast(`فایل ${filename} با موفقیت دانلود شد.`, 'success');
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
-function exportAllFrameworks() {
-    if (!frameworksList || frameworksList.length === 0) {
-        showToast('هیچ فریم‌ورکی برای خروجی گرفتن وجود ندارد.', 'error');
-        return;
+async function exportAllFrameworks() {
+    showToast('در حال آماده‌سازی فایل JSON کل سیستم...', 'success');
+    try {
+        // سعی می‌کنیم همه داده‌ها را بگیریم تا خروجی کامل باشد (در صورت وجود محدودیتِ صفحه‌بندی در سرور)
+        const response = await fetch(`${API_FRAMEWORKS}/?limit=1000`);
+        let exportData = frameworks; 
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.data) exportData = data.data;
+        }
+        
+        downloadJSON(exportData, 'all_frameworks_export.json');
+    } catch (error) {
+        // اگر مشکلی پیش آمد، دیتای حافظه فعلی (frameworks) را دانلود می‌کنیم
+        downloadJSON(frameworks, 'all_frameworks_export.json');
     }
-
-    const exportData = {
-        type: "crazyDev_Frameworks_Export",
-        exported_at: new Date().toISOString(),
-        total_frameworks: frameworksList.length,
-        frameworks: frameworksList
-    };
-
-    downloadJSON(exportData, 'all_frameworks.json');
 }
 
 function exportCurrentFramework() {
-    if (!commandsList || commandsList.length === 0) {
-        showToast('هیچ دستوری برای این فریم‌ورک ثبت نشده است.', 'error');
-        return;
-    }
+    if(!currentFrameworkId) return;
+    showToast(`در حال آماده‌سازی JSON فریم‌ورک ${currentFrameworkSlug}...`, 'success');
     
-    const frameworkName = currentCmdFrameworkSlug || 'unknown';
+    // گرفتن اطلاعات فریم‌ورک از آرایه موجود
+    const fwInfo = frameworks.find(f => (f.id == currentFrameworkId || f.ID == currentFrameworkId)) || {};
+    
+    // ساختاردهی خروجی که شامل خود فریم‌ورک و دستورات (commands که درون مدال لود شده‌اند) است
     const exportData = {
-        framework_slug: frameworkName,
-        exported_at: new Date().toISOString(),
-        total_commands: commandsList.length,
-        commands: commandsList
+        framework: fwInfo,
+        commands: commands
     };
-
-    const filename = `${frameworkName}_commands.json`;
-    downloadJSON(exportData, filename);
+    
+    downloadJSON(exportData, `${currentFrameworkSlug}_commands_export.json`);
 }
 
-// ==========================================
-// INITIALIZATION
-// ==========================================
-// MOCK DATA GENERATOR (Only for UI Testing if API is offline)
-function renderFrameworksMock() {
-    const mockData = [
-        { id: "1", name: "Laravel", slug: "laravel", language: "PHP", description: "فریم‌ورک قدرتمند زبان PHP", is_featured: true },
-        { id: "2", name: "Gin", slug: "gin", language: "Go", description: "وب فریم‌ورک سریع برای Go", is_featured: false }
-    ];
-    frameworksList = mockData;
-    renderFrameworks(mockData);
-}
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+    fetchFrameworks();
+});
 
+// Initialize App
 document.addEventListener('DOMContentLoaded', () => {
     fetchFrameworks();
 });
