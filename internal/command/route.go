@@ -13,6 +13,6 @@ func SetupRouter(r *routing.Router, db *gorm.DB) {
 	cmndGrp.GET("/", h.Index)
 	cmndGrp.POST("/", h.Store)
 	cmndGrp.PUT("/:id", h.Update)
-	cmndGrp.GET("/:id", h.Show)
+	cmndGrp.GET("/:id", h.Download)
 	cmndGrp.DELETE("/:id", h.Delete)
 }
