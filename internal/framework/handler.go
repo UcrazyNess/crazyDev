@@ -25,7 +25,9 @@ func NewHandler(db *gorm.DB) *Handler {
 func (h *Handler) Index(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 	var framework migration.Framework
-	result, err := sqlite.Paginate[migration.Framework](h.db.Model(framework), offset, 10, c.Request.URL.Path)
+	result, err := sqlite.Paginate[migration.Framework](h.db.Preload("Commands", func(db *gorm.DB) *gorm.DB {
+		return db.Order("sort_order IS NULL, sort_order DESC")
+	}).Model(framework), offset, 10, c.Request.URL.Path)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در دریافت لیست فریمورک‌ها"})
 		return
