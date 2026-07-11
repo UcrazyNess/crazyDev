@@ -62,12 +62,13 @@ func (h *Handler) Generate(c *gin.Context) {
 		return
 	}
 
-	targetDir := "./storage/docker-Compose/"
+	targetDir := filepath.Join("storage", "docker-Compose")
 	err = os.MkdirAll(targetDir, 0755)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در ایجاد دایرکتوری"})
 		return
 	}
+
 	fileName := fmt.Sprintf("%s-docker-compose.yml", uuid.New().String())
 	filePath := filepath.Join(targetDir, fileName)
 	err = os.WriteFile(filePath, yamlBytes, 0644)
@@ -153,10 +154,14 @@ func (h *Handler) Update(c *gin.Context) {
 	dockerCompose.ProjectName = *req.ProjectName
 
 	if fileChanged {
-		targetDir := req.Path
-		_ = os.MkdirAll(*targetDir, os.ModePerm)
+		targetDir := filepath.Join("storage", "docker-Compose")
+		err = os.MkdirAll(targetDir, 0755)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در ایجاد دایرکتوری"})
+			return
+		}
 		fileName := fmt.Sprintf("%s-docker-compose.yml", uuid.New().String())
-		newFilePath := filepath.Join(*targetDir, fileName)
+		newFilePath := filepath.Join(targetDir, fileName)
 
 		if err := os.WriteFile(newFilePath, yamlBytes, 0644); err != nil {
 			tx.Rollback()

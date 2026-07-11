@@ -88,7 +88,7 @@ func (h *Handler) Store(c *gin.Context) {
 
 		dirPath := filepath.Join("storage", "commands", req.FrameworkID)
 
-		if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
+		if err := os.MkdirAll(dirPath, 0755); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "خطا در ایجاد مسیر فایل"})
 			return
 		}
