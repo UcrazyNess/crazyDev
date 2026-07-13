@@ -87,10 +87,10 @@ function renderFrameworks() {
                 </div>
                 
                 <div class="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onclick="editFramework('${fw.id}')" class="w-8 h-8 rounded-lg bg-dark-bg border border-white/10 text-gray-400 hover:text-white hover:border-purple-500 transition-all flex items-center justify-center">
+                    <button onclick="editFramework('${fw.slug}')" class="w-8 h-8 rounded-lg bg-dark-bg border border-white/10 text-gray-400 hover:text-white hover:border-purple-500 transition-all flex items-center justify-center">
                         <i class="fas fa-edit text-sm"></i>
                     </button>
-                    <button onclick="deleteFramework('${fw.id}')" class="w-8 h-8 rounded-lg bg-dark-bg border border-white/10 text-gray-400 hover:text-white hover:border-red-500 transition-all flex items-center justify-center">
+                    <button onclick="deleteFramework('${fw.slug}')" class="w-8 h-8 rounded-lg bg-dark-bg border border-white/10 text-gray-400 hover:text-white hover:border-red-500 transition-all flex items-center justify-center">
                         <i class="fas fa-trash text-sm"></i>
                     </button>
                 </div>
@@ -127,8 +127,8 @@ function closeModal() {
     document.getElementById('framework-modal').classList.remove('flex');
 }
 
-function editFramework(id) {
-    const fw = frameworks.find(f => f.id == id);
+function editFramework(slug) {
+    const fw = frameworks.find(f => f.slug == slug);
     if (!fw) return;
 
     document.getElementById('f-id').value = fw.id;
@@ -156,7 +156,7 @@ async function saveFramework() {
     };
 
     const method = id ? 'PUT' : 'POST';
-    const url = id ? `${API_FRAMEWORKS}/${id}` : API_FRAMEWORKS;
+    const url = id ? `${API_FRAMEWORKS}/${slug}` : API_FRAMEWORKS;
 
     try {
         const response = await fetch(url, {
@@ -179,10 +179,10 @@ async function saveFramework() {
     }
 }
 
-async function deleteFramework(id) {
+async function deleteFramework(slug) {
     if (!confirm('آیا از حذف این فریم‌ورک و تمامی دستورات آن اطمینان دارید؟')) return;
     try {
-        const response = await fetch(`${API_FRAMEWORKS}/${id}`, { method: 'DELETE' });
+        const response = await fetch(`${API_FRAMEWORKS}/${slug}`, { method: 'DELETE' });
         if (response.ok) {
             showToast('فریم‌ورک با موفقیت حذف شد');
             currentPage = 0;

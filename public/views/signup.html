@@ -73,8 +73,8 @@
         }
         
         .persian-border {
-             border-image: linear-gradient(to right, #00E5FF, #1C39BB) 1;
-             border-bottom: 2px solid;
+            border-image: linear-gradient(to right, #00E5FF, #1C39BB) 1;
+            border-bottom: 2px solid;
         }
 
         /* استایل اختصاصی اینپوت‌ها */
@@ -269,9 +269,9 @@
                 
                 // پیام دمو برای زمانی که API واقعی روی این آدرس در دسترس نیست
                 if(error.message === 'Failed to fetch') {
-                     formMessage.innerHTML = '<i class="fas fa-exclamation-circle ml-1"></i> درخواست ارسال شد (خطای اتصال به سرور محلی API). ساختار JSON آماده است.';
+                    formMessage.innerHTML = '<i class="fas fa-exclamation-circle ml-1"></i> درخواست ارسال شد (خطای اتصال به سرور محلی API). ساختار JSON آماده است.';
                 } else {
-                     formMessage.innerHTML = `<i class="fas fa-exclamation-triangle ml-1"></i> ${error.message}`;
+                    formMessage.innerHTML = `<i class="fas fa-exclamation-triangle ml-1"></i> ${error.message}`;
                 }
             } finally {
                 // برگرداندن دکمه به حالت اولیه
