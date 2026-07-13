@@ -1,0 +1,25 @@
+
+services:
+  go-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: dev  
+      # اگر برای دور زدن تحریم/پراکسی موقع بیلد به شبکه هاست نیاز داری، خط زیر رو بذار بمونه:
+      network: host  
+    container_name: my_go_app_dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app     
+    restart: unless-stopped
+    networks:
+      my_custom_network:
+        ipv4_address: 172.20.0.5  # <--- آی‌پی استاتیک دلخواه شما برای این کانتینر
+
+networks:
+  my_custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16  # <--- تعریف رنج شبکه داکر
